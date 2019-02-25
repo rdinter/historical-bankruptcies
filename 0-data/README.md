@@ -1,0 +1,6 @@
+# Data Folder
+
+There are two main sources for downloading data which updates every quarter or year: the [US Courts](http://www.uscourts.gov/statistics-reports/caseload-statistics-data-tables) and the [Federal Judiciary Center](https://www.fjc.gov/research/idb).
+
+* [FJC](FJC) -
+* [uscourts](uscourts) - all of the bankruptcy data. The ["current"](http://www.uscourts.gov/statistics-reports/caseload-statistics-data-tables) data involve the [Judicial F-2](uscourts/f2_judicial) tables from 1997 onward (annual based on September 30th), [F-2 three month](uscourts/f2_three) tables which are quarterly level filings from 31 March 2001 onward, [F-2 one month](uscourts/f2_one) since 31 March 2013 onward (but additional data from PACER has pushed this back to 2007), and [F-5a](uscourts/f5a) which are county origin level filings and publicly available since 31 March 2013 (but available on PACER and through the generosity of [Ernest P. Goss](https://business.creighton.edu/faculty-directory-profile/217/ernest-goss) of Creighton University). Lots of the interesting, non-public data are housed in the [archived](uscourts/archived/README.html) section here.
