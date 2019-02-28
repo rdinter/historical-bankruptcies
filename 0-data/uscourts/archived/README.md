@@ -3,16 +3,21 @@ output:
   html_document: default
   pdf_document: default
 ---
-Files were found via archive.org of the uscourts.gov website:
 
-Main site archived in [May of 2005](https://web.archive.org/web/20050527002804/http://www.uscourts.gov:80/bnkrpctystats/statistics.htm). These are mostly the F-2 Tables, which has a default of twelve-month filings preceding. There are a few F-2: Three Tables, which would be quarterly level filings. Keep in mind that the Family Farmers Bankruptcy Act of 1986 was signed into law on 1986-10-27 and into effect on 1986-11-26. This would make the start of Chapter 12 for the quarter ending on 1986-12-31 and be the full value of 1986 Chapter 12. Original files:
+# Archived Bankruptcy Filing Data
 
-* Twelve-month period [ending on March 31](https://web.archive.org/web/20050903105140/http://www.uscourts.gov/bnkrpctystats/MarchBK1986-2003.pdf) from 1986-03-31 until 2003-03-31.
-* Twelve-month period [ending on June 30](https://web.archive.org/web/20050903104927/http://www.uscourts.gov/bnkrpctystats/1960-0312-MonthJune.pdf) from 1983-06-30 until 2002-06-30 (plus the quarter ending 2003-06-30 and national values for twelve-month period ending on June 30 since 1960).
-* Twelve-month period [ending on September 30](https://web.archive.org/web/20050903105110/http://www.uscourts.gov/bnkrpctystats/FY1987-2003.pdf) from 1987-09-30 until 2003-09-30.
-* Twelve-month period [ending on December 31](https://web.archive.org/web/20050527002804/http://www.uscourts.gov:80/bnkrpctystats/Bk2002-1990Calendar.pdf) from 1990-12-31 until 2002-12-31.
+(files were found via archive.org of the uscourts.gov website)
 
-I have attempted to break these files apart so that each F-2 table is its own .pdf. The naming convention is adopted similar to [current files f2 and f2_three](https://github.com/rdinter/bankruptcies/tree/master/0-data/uscourts) tables. The `f2_XXXX-YY-ZZ.pdf` naming convention indicates that an F-2 twelve-month table ending on the quarter of XXXX-YY-ZZ is contained in the .pdf. A F-2 three-month is referenced as `f2_three_XXXX-YY-ZZ.pdf`.
+Main site archived in [May of 2005](https://web.archive.org/web/20050527002804/http://www.uscourts.gov:80/bnkrpctystats/statistics.htm). These are mostly the F-2 Tables, which has a default of twelve-month filings preceding. There are a few F-2: Three Tables, which would be quarterly level filings. Keep in mind that the Family Farmers Bankruptcy Act of 1986 was signed into law on 1986-10-27 and into effect on 1986-11-26. This would make the start of Chapter 12 for the quarter ending on 1986-12-31 and be the full value of 1986 Chapter 12.
+
+Original files:
+
+- Twelve-month period [ending on March 31](https://web.archive.org/web/20050903105140/http://www.uscourts.gov/bnkrpctystats/MarchBK1986-2003.pdf) from 1986-03-31 until 2003-03-31.
+- Twelve-month period [ending on June 30](https://web.archive.org/web/20050903104927/http://www.uscourts.gov/bnkrpctystats/1960-0312-MonthJune.pdf) from 1983-06-30 until 2002-06-30 (plus the quarter ending 2003-06-30 and national values for twelve-month period ending on June 30 since 1960).
+- Twelve-month period [ending on September 30](https://web.archive.org/web/20050903105110/http://www.uscourts.gov/bnkrpctystats/FY1987-2003.pdf) from 1987-09-30 until 2003-09-30.
+- Twelve-month period [ending on December 31](https://web.archive.org/web/20050527002804/http://www.uscourts.gov:80/bnkrpctystats/Bk2002-1990Calendar.pdf) from 1990-12-31 until 2002-12-31.
+
+I have attempted to break these files apart so that each F-2 table is its own .pdf. The naming convention is adopted similar to [current files f2 and f2_three](https://github.com/rdinter/historical-bankruptcies/tree/master/0-data/uscourts) tables. The `f2_XXXX-YY-ZZ.pdf` naming convention indicates that an F-2 twelve-month table ending on the quarter of XXXX-YY-ZZ is contained in the .pdf. A F-2 three-month is referenced as `f2_three_XXXX-YY-ZZ.pdf`.
 
 | Year | March  | June   | September | December |
 |:----:|:------:|:------:|:---------:|:--------:|
@@ -38,7 +43,7 @@ I have attempted to break these files apart so that each F-2 table is its own .p
 | 2002 | both   | both | both    | both   |
 | 2003 | both   | both | both    | both   |
 
-(We already have these beginning on 2001-03-31, but it's still a nice double-check)
+(We already have these beginning on 2001-03-31 from currently active USCourts.gov, but it's still a nice double-check)
 
 In addition, there are explicit quarterly level files which appears to be what PACER charges over \$600 for plus some more.
 
