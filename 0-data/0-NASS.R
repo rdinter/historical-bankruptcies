@@ -24,9 +24,9 @@ operations <- nass_data(source_desc = "SURVEY", agg_level_desc = "NATIONAL",
                         numeric_vals = T)
 
 operations <- operations %>% 
-  select(year, farms = Value) %>% 
-  arrange(year) %>% 
-  mutate(farm_change = farms - lag(farms),
-         farm_pct_change = scales::percent(farm_change / lag(farms)))
+  select(YEAR = year, FARMS = Value) %>% 
+  arrange(YEAR) %>% 
+  mutate(FARM_CHANGE = FARMS - lag(FARMS),
+         FARM_PCT_CHANGE = scales::percent(FARM_CHANGE / lag(FARMS)))
 
 write_csv(operations, paste0(local_dir, "/operations.csv"))
