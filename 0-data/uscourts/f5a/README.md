@@ -1,3 +1,9 @@
-# F-5A Tables in PACER
+# F-5A 
 
-Go to the [PACER Case Locator](https://pcl.uscourts.gov/search) then to the "Statistics" section found at the top right. A new window will pop-up which gives you about 8 different options of statistical reports to look at. The second one should be "U.S. Bankruptcy F-5a" which contains county level bankruptcies beginning in March of 1998 and goes until December of 2012 (15 years with 4 quarters each for 60 files). The files range from about \$8 to almost \$16.
+[f5a.csv](f5a.csv)
+
+Keep in mind that these values are for the 12-month period preceding the date.
+
+## Tables in PACER
+
+Go to: https://pcl-legacy.uscourts.gov/statistics then select the "U.S. Bankruptcy F-5a" menu.
