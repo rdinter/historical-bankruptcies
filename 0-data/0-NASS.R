@@ -30,3 +30,20 @@ operations <- operations %>%
          FARM_PCT_CHANGE = scales::percent(FARM_CHANGE / lag(FARMS)))
 
 write_csv(operations, paste0(local_dir, "/operations.csv"))
+
+
+# ---- state-farms --------------------------------------------------------
+
+state_farms <- nass_data(source_desc = "CENSUS", agg_level_desc = "STATE",
+                         commodity_desc = "FARM OPERATIONS",
+                         short_desc = "FARM OPERATIONS - NUMBER OF OPERATIONS",
+                         domain_desc = "TOTAL",
+                         numeric_vals = T)
+
+state_farms <- state_farms %>% 
+  select(YEAR = year, FARMS = Value, STATE = state_name) %>% 
+  arrange(YEAR, STATE) %>% 
+  group_by(STATE) %>% 
+  mutate(FARM_CHANGE = FARMS - lag(FARMS),
+         FARM_PCT_CHANGE = scales::percent(FARM_CHANGE / lag(FARMS)))
+

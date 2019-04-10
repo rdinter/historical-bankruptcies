@@ -12,7 +12,7 @@ library("tidyverse")
 library("zoo")
 
 local_dir   <- "1-tidy/bankruptcy"
-if (!file.exists(local_dir)) dir.create(local_dir)
+if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
 
 # ---- national -----------------------------------------------------------
 
@@ -86,3 +86,22 @@ monthly %>%
   summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), funs(sum(., na.rm = T))) %>% 
   write_csv(paste0(local_dir, "/district_monthly.csv"))
 
+
+# ---- county -------------------------------------------------------------
+
+county <- read_rds("0-data/uscourts/f5a/f5a.rds") %>% 
+  filter(grepl("12/31/", QTR_ENDED), ) %>% 
+  select(-NBCHAP_12) %>% 
+  group_by(DATE, FIPS) %>% 
+  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), ~sum(., na.rm = T)) %>% 
+  ungroup()
+
+goss   <- read_rds("0-data/uscourts/archived/f5a/f5a_goss.rds") %>% 
+  mutate(DATE = as.Date(paste0(YEAR, "-12-31"))) %>% 
+  select(-YEAR, -NAME)
+
+j5 <- county %>% 
+  full_join(goss) %>% 
+  complete(DATE, FIPS)
+
+write_csv(j5, paste0(local_dir, "/county_annual.csv"))

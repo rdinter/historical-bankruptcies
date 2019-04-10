@@ -5,6 +5,12 @@ library("httr")
 library("rvest")
 library("tidyverse")
 
+folder_create <- function(x, y = "") {
+  temp <- paste0(y, x)
+  if (!file.exists(temp)) dir.create(temp, recursive = T)
+  return(temp)
+}
+
 # ---- f2 -----------------------------------------------------------------
 
 # http://www.uscourts.gov/data-table-numbers/f-2
@@ -14,10 +20,8 @@ library("tidyverse")
 #  while these are produced quarterly they are NOT quarterly data.
 
 # Create a directory for the data
-local_dir    <- "0-data/uscourts/f2"
-data_source <- paste0(local_dir, "/raw")
-if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
-if (!file.exists(data_source)) dir.create(data_source)
+local_dir    <- folder_create("0-data/uscourts/f2")
+data_source  <- folder_create("/raw", local_dir)
 
 base_url <- "http://www.uscourts.gov/statistics/table/f-2/bankruptcy-filings/"
 
@@ -76,10 +80,8 @@ file_xls <- files[grepl(".xls", files$file_name), ]
 #  September 30th and details previous 12-months.
 
 # Create a directory for the data
-local_dir    <- "0-data/uscourts/f2_judicial"
-data_source <- paste0(local_dir, "/raw")
-if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
-if (!file.exists(data_source)) dir.create(data_source)
+local_dir    <- folder_create("0-data/uscourts/f2_judicial")
+data_source  <- folder_create("/raw", local_dir)
 
 base_url <- "http://www.uscourts.gov/statistics/table/f-2/judicial-business/"
 
@@ -133,10 +135,8 @@ file_xls <- files[grepl(".xls", files$file_name), ]
 #  to always have a pdf, then mostly xls with at least one xlsx
 
 # Create a directory for the data
-local_dir    <- "0-data/uscourts/f2_one"
-data_source <- paste0(local_dir, "/raw")
-if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
-if (!file.exists(data_source)) dir.create(data_source)
+local_dir    <- folder_create("0-data/uscourts/f2_one")
+data_source  <- folder_create("/raw", local_dir)
 
 base_url <- paste0("http://www.uscourts.gov/statistics/table/",
                    "f-2-one-month/bankruptcy-filings/")
@@ -188,10 +188,9 @@ file_xls <- files[grepl(".xls", files$file_name), ]
 
 # ---- f2_three -----------------------------------------------------------
 
-local_dir    <- "0-data/uscourts/f2_three"
-data_source <- paste0(local_dir, "/raw")
-if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
-if (!file.exists(data_source)) dir.create(data_source)
+# Create a directory for the data
+local_dir    <- folder_create("0-data/uscourts/f2_three")
+data_source  <- folder_create("/raw", local_dir)
 
 base_url <- paste0("http://www.uscourts.gov/statistics/table/",
                    "f-2-three-months/bankruptcy-filings/")
@@ -250,10 +249,9 @@ file_xls <- files[grepl(".xls", files$file_name), ]
 #  there's a bit of conflict around what the FIPS mean
 #  http://www.uscourts.gov/data-table-numbers/f-5a
 
-local_dir    <- "0-data/uscourts/f5a"
-data_source <- paste0(local_dir, "/raw")
-if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
-if (!file.exists(data_source)) dir.create(data_source)
+# Create a directory for the data
+local_dir    <- folder_create("0-data/uscourts/f5a")
+data_source  <- folder_create("/raw", local_dir)
 
 base_url <- paste0("http://www.uscourts.gov/statistics/table/",
                    "f-5a/bankruptcy-filings/")

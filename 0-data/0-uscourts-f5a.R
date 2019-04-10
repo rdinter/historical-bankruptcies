@@ -20,6 +20,7 @@ if (!file.exists(data_source)) dir.create(data_source)
 # There's a problem with the .xlsx files. I had to manually save them as
 #  .xls files for them to be readable. Will need to update this later.
 f5a_files <- dir(data_source, full.names = T, pattern = ".xls", recursive = T)
+f5a_files <- f5a_files[!grepl("1998", f5a_files)]
 # f5a_files <- f5a_files[tools::file_ext(f5a_files) != "xlsx"]
 
 f5a_qtrly <- read_rds("0-data/FJC/IDB/f5a_quarterly.rds") %>%
