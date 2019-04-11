@@ -47,3 +47,5 @@ state_farms <- state_farms %>%
   mutate(FARM_CHANGE = FARMS - lag(FARMS),
          FARM_PCT_CHANGE = scales::percent(FARM_CHANGE / lag(FARMS)))
 
+
+write_csv(state_farms, paste0(local_dir, "/operations_state.csv"))

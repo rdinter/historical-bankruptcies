@@ -5,8 +5,6 @@
 # ---- start --------------------------------------------------------------
 
 library("haven")
-library("httr")
-library("rvest")
 library("stringr")
 library("tidyverse")
 sumn <- function(x) sum(x, na.rm = T)
@@ -17,33 +15,14 @@ data_source <- paste0(local_dir, "/raw")
 if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
 if (!file.exists(data_source)) dir.create(data_source)
 
-years <- str_pad(8:parse_number(format(Sys.Date(), "%y")),
-                 2, "left", "0")
-links <- paste0("https://www.fjc.gov/sites/default/files/idb/datasets/cpbank",
-                years, ".zip")
-
-link_files <- paste0(data_source, "/", basename(links))
-
-map2(link_files, links, function(x, y){
-  if (!file.exists(x)) {
-    temp   <- GET(y)
-    
-    # In case the file doesn't exist:
-    if (temp$status_code > 400) return()
-    download.file(y, x)
-    }
-})
-
-# j6 <- "https://www.fjc.gov/sites/default/files/idb/textfiles/bank08on_0.zip"
-
 # ---- parse --------------------------------------------------------------
 
 districts <- read_csv("0-data/FJC/district_cross.csv") %>% 
   rename_all(toupper)
 
-link_files <- dir(data_source, full.names = T)
+fjc_files <- dir(data_source, full.names = T)
 
-j5 <- map(link_files, read_sas)
+j5 <- map(fjc_files, read_sas)
 
 # Convert these vars:
 # ORGFLCHP CRNTCHP CLCHPT
@@ -188,7 +167,7 @@ banks <- j5 %>%
                                  pre_bapcpa_chp(CLCHPT),
                                  chp(CLCHPT))) %>% 
       filter(org_chap == "12" | crnt_chap == "12" | cl_chap == "12")
-    }) %>% 
+  }) %>% 
   bind_rows() %>% 
   # mutate(DISTRICT = if_else(is.na(DISTRICT), District, DISTRICT)) %>% 
   # select(-District) %>% 
