@@ -9,7 +9,7 @@ library("rvest")
 library("tidyverse")
 
 # Create a directory for the data
-local_dir    <- "0-data/FJC/IDB"
+local_dir    <- "0-data/fjc/IDB"
 data_source <- paste0(local_dir, "/raw")
 if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
 if (!file.exists(data_source)) dir.create(data_source)

@@ -42,7 +42,7 @@ mondf(as.Date("2008-01-01"), Sys.Date())
 local_dir   <- "1-tidy/bankruptcy"
 if (!file.exists(local_dir)) dir.create(local_dir)
 
-bus <- read_rds("0-data/FJC/IDB/raw_business_new.rds") %>% 
+bus <- read_rds("0-data/fjc/IDB/raw_business_new.rds") %>% 
   # Denote the debt limit at the time of filing
   # In 1978, limits were $100,000 and $350,000. Then changed in
   # 1994 - $250,000 and $750,000
@@ -86,7 +86,7 @@ bus <- read_rds("0-data/FJC/IDB/raw_business_new.rds") %>%
 #  corporation - DBTRTYP (type of debtor) 
 #  involuntary - CASETYP (involuntary versus voluntary)
 
-farm <- read_rds("0-data/FJC/IDB/raw_ch12s_new.rds") %>% 
+farm <- read_rds("0-data/fjc/IDB/raw_ch12s_new.rds") %>% 
   # Denote the debt limit at the time of filing
   # $1,500,000 prior to BAPCPA
   # $3,237,000 in 2005, adjusted every 3 years by CPI on April 1

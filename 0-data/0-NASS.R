@@ -10,7 +10,7 @@ library("tidyverse")
 not_all_na <- function(x) any(!is.na(x))
 
 # Create a directory for the data
-local_dir    <- "0-data/NASS"
+local_dir    <- "0-data/nass"
 data_source <- paste0(local_dir, "/raw")
 if (!file.exists(local_dir)) dir.create(local_dir)
 if (!file.exists(data_source)) dir.create(data_source)
