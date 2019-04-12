@@ -161,6 +161,9 @@ j5 <- j5 %>%
 write_csv(j5, paste0(local_dir, "/ch12_bankruptcy.csv"))
 write_rds(j5, paste0(local_dir, "/ch12_bankruptcy.rds"))
 
+j5 <- filter(j5, start > "2007-09-30")
+
+write_csv(j5, paste0(local_dir, "/ch12_bankruptcy_f2008.csv"))
 
 # ---- business -----------------------------------------------------------
 # 
