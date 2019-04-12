@@ -1,0 +1,56 @@
+---
+title: "Getting Started with Historical Bankruptcies"
+author: "Robert Dinterman"
+institute: "The Ohio State University"
+date: 12 April 2019
+output:
+  revealjs::revealjs_presentation:
+    theme: night
+    highlight: pygments
+    center: true
+    self_contained: true
+    fig_width: 7
+    fig_height: 5
+    reveal_options:
+      slideNumber: true
+      previewLinks: true
+---
+
+# Overview
+
+## Overview
+
+- Data are publicly available online if that is the need:
+    - https://rdinter.github.io/historical-bankruptcies
+- But to continuously update the files, you'll need GitHub and RStudio:
+    - https://github.com/rdinter/historical-bankruptcies
+    - click on the "Clone or download" button towards the top right then download the zip file
+
+# Data
+
+## Data
+
+- Data are from the USCourts, although there are different levels of aggregation
+- Summaries at geographic levels are from [USCourts.gov](https://www.uscourts.gov/statistics-reports/caseload-statistics-data-tables)
+    - Monthly by bank districts since 2007 from f2-one tables
+    - Quarterly by bank districts since 2001 from f2-three tables
+    - Quarterly by county of residence since 2013 from f5a tables
+- Individual level data [Federal Judiciary Center](https://www.fjc.gov/research/idb/bankruptcy-cases-filed-terminated-and-pending-fy-2008-present) from October 2007 onward
+    - [ICPSR](https://www.icpsr.umich.edu/icpsrweb/NACJD/studies/4086) has data going back to October 1, 1993 but the financial characteristics are spotty and prior to October 1, 2007 the data only contains cases closed in that year
+
+## Structure
+
+- The [automated](../automated.R) script will go through and download data as well as parse it
+- USCourts does not provide for historical data, but those data are stored in the [archived](../0-data/uscourts/archived/) section in the US Courts folder
+    - PDFs are available in there to add on more data from historical data
+    - Currently only chapter 12 has been taken from the historical data
+
+# Extra
+
+## Notes for creating a website
+
+- Go to your repository on GitHub.com > "Settings"
+    - Scroll to "GitHub Pages" section
+    - "Source" is where you can publish the repository as a website, I select "master branch" instead of the "master branch /docs folder"
+- The ".md" files will be rendered as html with the "README.md" as the default index on your site
+

@@ -24,7 +24,7 @@ For most users, the raw data are of the most importance and they are referenced 
 A few packages needs to be installed to maintain this repository. Most of these are on CRAN and can be installed with the `install.packages()` command but one requires the devtools to be installed to install a package on GitHub:
 
 ```R
-install.packages("devtools", "gdata", "haven", "httr", "lubridate", "readxl", "rvest", "stringr", "tidyverse", "zipcode", "zoo")
+install.packages("devtools", "gdata", "haven", "httr", "lubridate", "readxl", "rvest", "stringr", "tabulizer", "tidyverse", "zipcode", "zoo")
 devtools::install_github("rdinter/usdarnass")
 ```
 
@@ -37,6 +37,7 @@ A quick reasoning for each package:
 - readxl - reading newer excel files
 - rvest - web scraping the USCourts.gov
 - stringr - useful for string parsing
+- tabulizer - useful for parsing the PDF tables
 - tidyverse - useful for data munging
 - usdarnass - downloading data from QuickStats
 - zipcode - determining latitude and longitudes for locations in the FJC data
