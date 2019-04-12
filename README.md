@@ -17,3 +17,25 @@ For most users, the raw data are of the most importance and they are referenced 
 - Tidy data can be found in [1-tidy](1-tidy)
 - Some generic figures can be found in [2-eda](2-eda)
 
+## Packages Needed
+
+A few packages needs to be installed to maintain this repository. Most of these are on CRAN and can be installed with the `install.packages()` command but one requires the devtools to be installed to install a package on GitHub:
+
+```R
+install.packages("devtools", "gdata", "haven", "httr", "lubridate", "readxl", "rvest", "stringr", "tidyverse", "zipcode", "zoo")
+devtools::install_github("rdinter/usdarnass")
+```
+
+A quick reasoning for each package:
+
+- gdata - for some old excel files which cannot be read with up to date packages
+- haven - to read SAS files for the FJC data
+- httr - web scraping the USCourts.gov
+- lubridate - formatting for time series data
+- readxl - reading newer excel files
+- rvest - web scraping the USCourts.gov
+- stringr - useful for string parsing
+- tidyverse - useful for data munging
+- usdarnass - downloading data from QuickStats
+- zipcode - determining latitude and longitudes for locations in the FJC data
+- zoo - useful for time series data
