@@ -47,7 +47,7 @@ banks %>%
   filter(!is.na(TOTAL_FILINGS)) %>% 
   select(STATE:NBCHAP_13, YEAR:ST_ABRV) %>% 
   group_by(DATE) %>% 
-  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), funs(sum(., na.rm = T))) %>% 
+  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), list(~sum(., na.rm = T))) %>% 
   write_csv(paste0(local_dir, "/national_quarterly_all.csv"))
 
 
@@ -64,7 +64,7 @@ banks %>%
   filter(!is.na(TOTAL_FILINGS)) %>% 
   select(STATE:NBCHAP_13, YEAR:ST_ABRV) %>% 
   group_by(DATE, DISTRICT, STATE, CIRCUIT) %>% 
-  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), funs(sum(., na.rm = T))) %>% 
+  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), list(~sum(., na.rm = T))) %>% 
   write_csv(paste0(local_dir, "/district_quarterly_all.csv"))
 
 # ---- monthly ------------------------------------------------------------
@@ -75,7 +75,7 @@ monthly %>%
   filter(!is.na(TOTAL_FILINGS)) %>% 
   select(STATE:NBCHAP_13, DATE, YEAR:ST_ABRV) %>% 
   group_by(DATE) %>% 
-  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), funs(sum(., na.rm = T))) %>% 
+  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), list(~sum(., na.rm = T))) %>% 
   write_csv(paste0(local_dir, "/national_monthly.csv"))
 
 
@@ -83,14 +83,14 @@ monthly %>%
   filter(!is.na(TOTAL_FILINGS)) %>% 
   select(STATE:NBCHAP_13, DATE, YEAR:ST_ABRV) %>% 
   group_by(DATE, DISTRICT, STATE, CIRCUIT) %>% 
-  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), funs(sum(., na.rm = T))) %>% 
+  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), list(~sum(., na.rm = T))) %>% 
   write_csv(paste0(local_dir, "/district_monthly.csv"))
 
 
 # ---- county -------------------------------------------------------------
 
 county <- read_rds("0-data/uscourts/f5a/f5a.rds") %>% 
-  filter(grepl("12/31/", QTR_ENDED), ) %>% 
+  filter(grepl("12/31/", QTR_ENDED)) %>% 
   select(-NBCHAP_12) %>% 
   group_by(DATE, FIPS) %>% 
   summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), ~sum(., na.rm = T)) %>% 
