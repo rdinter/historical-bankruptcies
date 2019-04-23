@@ -26,7 +26,7 @@ gross income in the previous tax year comes from farming, although this
 can also be satisfied if 2 of the previous 3 tax years meet this
 criteria. The debt requirement is that at least 50% (80% for fishermen)
 of outstanding debt is related to farming and total debts do not exceed
-the debt limit which is currently set at $4,153,150 ($1,924,550 for
+the debt limit which is currently set at $4,411,400 ($2,044,225 for
 fishermen). This is a more strict definition of a farm than what the
 USDA enforces which ensures filers of chapter 12 would be classified as
 farmers or fishermen.
@@ -44,10 +44,11 @@ chapter 7, 11, and 13.
 |:---------------|:------------------|:---------------------|
 | 1986-11-26     | $1,500,000        | NA                   |
 | 2005-10-15     | $3,237,000        | $1,500,000           |
-| 2008-04-01     | $3,544,525        | $1,642,500           |
-| 2011-04-01     | $3,792,650        | $1,757,475           |
-| 2014-04-01     | $4,031,575        | $1,868,200           |
-| 2017-04-01     | $4,153,150        | $1,924,550           |
+| 2007-04-01     | $3,544,525        | $1,642,500           |
+| 2010-04-01     | $3,792,650        | $1,757,475           |
+| 2013-04-01     | $4,031,575        | $1,868,200           |
+| 2016-04-01     | $4,153,150        | $1,924,550           |
+| 2019-04-01     | $4,411,400        | $2,044,225           |
 
 What are bankruptcy trends in recent years?
 -------------------------------------------
