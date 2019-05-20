@@ -1,0 +1,330 @@
+---
+title: "Chapter 12 Maps"
+author: Robert Dinterman
+date: "`r format(Sys.Date(), '%Y-%B-%d')`"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+```{r start, include = FALSE}
+#devtools::install_github("rdinter/albersusa")
+library("albersusa")
+library("gganimate")
+library("knitr")
+library("lubridate")
+library("maptools")
+library("scales")
+library("sp")
+library("spdplyr")
+library("tidyverse")
+
+local_dir   <- "../2-eda/"
+figures     <- paste0(local_dir, "/figures")
+if (!file.exists(local_dir)) dir.create(local_dir)
+if (!file.exists(figures)) dir.create(figures)
+
+qtrly_data <- read_rds("../0-data/uscourts/f2_three/f2_three.rds") %>% 
+  mutate(quarter = quarter(DATE))
+farms <- read_csv("../0-data/nass/operations_state.csv")
+farms_county <- read_csv("../0-data/nass/operations_county.csv",
+                         col_types = cols(.default = "d"))
+
+banks <- farms %>% 
+  select(farms_state = FARMS, YEAR, STATE) %>% 
+  right_join(qtrly_data)
+
+dist_hacks <- data.frame(FIPS = c(2010, 46102),
+                         COUNTY = c("", "OGLALA LAKOTA"),
+                         STATE = c("ALASKA", "SOUTH DAKOTA"),
+                         DISTRICT = c("ALASKA", "SOUTH DAKOTA"),
+                         CIRCUIT = c("NINTH CIRCUIT", "EIGHTH CIRCUIT"))
+dists <- read_csv("../0-data/uscourts/district_counties.csv") %>% 
+  mutate(FIPS = as.numeric(FIPS),
+         fips = as.numeric(FIPS)) %>% 
+  bind_rows(dist_hacks)
+
+dist_map <- dists %>%
+  group_by(STATE) %>% 
+  summarise(STATE_DISTS = n_distinct(DISTRICT)) %>% 
+  right_join(dists)
+
+# Merge in with county level data, then aggregate to district level
+j5 <- farms_county %>% 
+  left_join(dist_map) %>% 
+  group_by(YEAR, DISTRICT, STATE_DISTS, STATE, CIRCUIT) %>% 
+  summarise(FARMS = sum(FARMS, na.rm = T)) %>% 
+  # Need to add in a row for DC:
+  bind_rows(data.frame(YEAR = unique(farms_county$YEAR),
+                       DISTRICT = "DISTRICT OF COLUMBIA",
+                       STATE = "DISTRICT OF COLUMBIA",
+                       CIRCUIT = "DC CIRCUIT", FARMS = 100,
+                       STATE_DISTS = 1)) %>% 
+  ungroup()
+
+hi <- j5 %>%
+  group_by(STATE, YEAR) %>%
+  summarise(state_farms = sum(FARMS, na.rm = T)) %>% 
+  right_join(j5) %>% 
+  mutate(ratio = FARMS / state_farms) %>% select(-state_farms)
+
+j6 <- hi %>% 
+  select(-YEAR, DISTRICT, STATE, STATE_DISTS, CIRCUIT, ratio) %>% 
+  right_join(banks) %>% 
+  mutate(farms_impute = round(ratio*farms_state)) %>% 
+  fill(farms_impute)
+
+### Map Data
+first <- counties_composite("aeqd")
+
+first <- merge(first, dists)
+
+gg_base <- fortify(first, region = "DISTRICT") %>%
+  rename(DISTRICT = id)
+
+
+# Add in aggregated data ...
+gg_first <- j6 %>% 
+  filter(YEAR > 2005) %>% 
+  group_by(DISTRICT) %>% 
+  summarise(b_rate = 4*(10000)*sum(impute, na.rm = T) /
+              sum(farms_impute, na.rm = T),
+            CHAP_12 = sum(impute, na.rm = T),
+            farms  = mean(farms_impute, na.rm = T)) %>%
+  right_join(gg_base)
+
+
+states  <- usa_composite("aeqd")
+states <- data.frame(toupper(states$name), coordinates(states),
+                     stringsAsFactors = F)
+names(states) <- c("id", "x", "y")
+states <- j6 %>% 
+  filter(YEAR > 2005) %>% 
+  rename(id = STATE) %>% 
+  group_by(id) %>% 
+  summarise(b_rate = 4*(10000)*sum(impute, na.rm = T) /
+              sum(farms_impute, na.rm = T),
+            CHAP_12 = sum(impute, na.rm = T)) %>%
+  right_join(states)
+gg_state <- first %>% 
+  fortify(region = "STATE") %>% 
+  left_join(states)
+
+# Remove the new england states
+new_england <- c("CONNECTICUT", "RHODE ISLAND", "VERMONT",
+                 "DISTRICT OF COLUMBIA", "DELAWARE")
+
+bank_theme <-   theme(panel.background = element_rect(fill = "transparent"),
+                      panel.grid = element_blank(),
+                      axis.line = element_blank(),
+                      axis.title = element_blank(),
+                      axis.ticks = element_blank(),
+                      axis.text = element_blank(),
+                      legend.position = "bottom",
+                      legend.title = element_blank(),
+                      legend.key.width = unit(2, "cm"),
+                      legend.text = element_text(size = 14),
+                      plot.title = element_text(size = 20),
+                      plot.subtitle = element_text(size = 14))
+
+```
+
+```{r global_options, include=FALSE}
+opts_chunk$set(cache = TRUE, echo = FALSE, warning = FALSE,
+               message = FALSE, out.height = "100%", out.width = "100%")
+```
+
+# General Maps of Interest
+
+All bankruptcy filings since BAPCPA came into effect as a rate:
+
+```{r bapcpa}
+sub_title <- paste0("Annualized from January 2006 through ",
+                    month(max(j6$DATE), label = TRUE, abbr = FALSE),
+                    " ", year(max(j6$DATE)), ": ",
+                    round(4*(10000)*sum(j6$CHAP_12[j6$YEAR > 2005]) / 
+                            sum(j6$farms_impute[j6$YEAR > 2005], na.rm = T), 2))
+
+ggplot(gg_first, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = b_rate), color = "grey") +
+  geom_path(data = gg_state, color = "grey50") +
+  geom_text(data = subset(gg_state, !(id %in% new_england)),
+            aes(x, y, label = round(b_rate, 2)),
+            check_overlap = T, size = 6, fontface = "bold") +
+  labs(title = "Farm Bankruptcies filed per 10,000 farms", 
+       subtitle = sub_title) +
+  scale_fill_gradient(low = "white", high = "red",
+                      limits = c(0, 10), oob = squish) +
+  bank_theme
+ggsave(paste0(figures, "/bapcpa_rates.png"), width = 13.3, height = 10)
+```
+
+Map generally used in the agricultural outlook meeting at Ohio State:
+
+```{r deans}
+gg_state$var = if_else(gg_state$id == "OHIO", "ohio", "rest")
+
+ggplot(gg_first, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = b_rate), color = "grey") +
+  geom_path(data = gg_state, color = "grey50") +
+  geom_text(data = subset(gg_state, !(id %in% new_england)),
+            aes(x, y, label = round(b_rate, 2), size = var, alpha = var),
+            check_overlap = T, fontface = "bold") +
+  labs(title = "Farm Bankruptcy Rates",
+       subtitle =  paste0("national rate: ",
+                          round(4*(10000)*sum(j6$CHAP_12[j6$YEAR > 2005]) /
+                                  sum(j6$farms_impute[j6$YEAR > 2005], na.rm = T),
+                                2))) +
+  scale_fill_gradient(low = "white", high = "red",
+                      limits = c(0, 10), oob = squish) +
+  scale_size_manual(values = c("rest" = 4, "ohio" = 10)) +
+  scale_alpha_manual(values = c("rest" = 0.5, "ohio" = 1)) +
+  guides(size = FALSE, alpha = FALSE) +
+  bank_theme +
+  theme(plot.title = element_text(size = 48),
+        plot.subtitle = element_text(size = 24))
+ggsave(paste0(figures, "/bapcpa_rates_dean.png"), width = 13.3, height = 10)
+```
+
+
+```{r bapcpa-count}
+sub_title <- paste0("From January 2006 through ",
+                    month(max(j6$DATE), label = TRUE, abbr = FALSE),
+                    " ", year(max(j6$DATE)), ": ",
+                    prettyNum(sum(j6$CHAP_12[j6$YEAR > 2005]),
+                              big.mark = ","))
+
+ggplot(gg_first, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = CHAP_12), color = "grey") +
+  geom_path(data = gg_state, color = "grey50") +
+  geom_text(data = subset(gg_state, !(id %in% new_england)),
+            aes(x, y, label = prettyNum(round(CHAP_12), big.mark = ",")),
+            check_overlap = T, size = 6, fontface = "bold") +
+  labs(title = "Total Farm Bankruptcies Filed", 
+       subtitle = sub_title) +
+  scale_fill_gradient(low = "white", high = "red", #limits = c(0, 1000),
+                      oob = squish, label = comma) +
+  bank_theme
+ggsave(paste0(figures, "/bapcpa_raw.png"), width = 13.3, height = 10)
+```
+
+```{r albers}
+
+first <- counties_composite("aeqd")
+
+first <- merge(first, dists)
+
+gg_base <- fortify(first, region = "DISTRICT") %>%
+  rename(DISTRICT = id)
+
+# Add in aggregated data ...
+gg_first <- j6 %>% 
+  group_by(DISTRICT) %>% 
+  summarise(b_rate = 4*(10000)*sum(impute, na.rm = T) /
+              sum(farms_impute, na.rm = T),
+            CHAP_12 = sum(impute, na.rm = T),
+            farms  = mean(farms_impute, na.rm = T)) %>%
+  right_join(gg_base)
+
+
+states  <- usa_composite("aeqd")
+states <- data.frame(toupper(states$name), coordinates(states),
+                     stringsAsFactors = F)
+names(states) <- c("id", "x", "y")
+states <- j6 %>% 
+  rename(id = STATE) %>% 
+  group_by(id) %>% 
+  summarise(b_rate = 4*(10000)*sum(impute, na.rm = T) /
+              sum(farms_impute, na.rm = T),
+            CHAP_12 = sum(impute, na.rm = T)) %>%
+  right_join(states)
+gg_state <- first %>% 
+  fortify(region = "STATE") %>% 
+  left_join(states)
+
+
+# Remove the new england states
+new_england <- c("CONNECTICUT", "RHODE ISLAND", "VERMONT",
+                 "DISTRICT OF COLUMBIA", "DELAWARE")
+sub_title <- paste0("Annualized from September 1986 through ",
+                    month(max(j6$DATE), label = TRUE, abbr = FALSE),
+                    " ", year(max(j6$DATE)), ": ",
+                   round(4*(10000)*sum(j6$impute, na.rm = T) /
+                           sum(j6$farms_impute, na.rm = T), 2))
+
+ggplot(gg_first, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = b_rate), color = "grey") +
+  geom_path(data = gg_state, color = "grey50") +
+  geom_text(data = subset(gg_state, !(id %in% new_england)),
+            aes(x, y, label = round(b_rate, 2)),
+            check_overlap = T, size = 6, fontface = "bold") +
+  labs(title = "Farm Bankruptcies filed per 10,000 farms", 
+       subtitle = sub_title) +
+  scale_fill_gradient(low = "white", high = "red",
+                      limits = c(0, 10), oob = squish) +
+  bank_theme
+ggsave(paste0(figures, "/historical_rates.png"), width = 13.3, height = 10)
+```
+
+Historical data, raw:
+
+```{r albers-count}
+sub_title <- paste0("From September 1986 through ",
+                    month(max(j6$DATE), label = TRUE, abbr = FALSE),
+                    " ", year(max(j6$DATE)), ": ",
+                    prettyNum(sum(j6$impute, na.rm = T), big.mark = ","))
+
+ggplot(gg_first, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = CHAP_12), color = "grey") +
+  geom_path(data = gg_state, color = "grey50") +
+  geom_text(data = subset(gg_state, !(id %in% new_england)),
+            aes(x, y, label = prettyNum(round(CHAP_12), big.mark = ",")),
+            check_overlap = T, size = 6, fontface = "bold") +
+  labs(title = "Total Farm Bankruptcies Filed", 
+       subtitle = sub_title) +
+  scale_fill_gradient(low = "white", high = "red",
+                      # limits = c(0, 10000), oob = squish,
+                      label = comma) +
+  bank_theme
+ggsave(paste0(figures, "/historical_raw.png"), width = 13.3, height = 10)
+```
+
+Historical rates of bankruptcy, animated:
+
+```{r animate-albers}
+gg_anime <- j6 %>% 
+  group_by(DISTRICT, YEAR) %>% 
+  summarise(b_rate = 4*(10000)*sum(impute, na.rm = T) /
+              sum(farms_impute, na.rm = T),
+            farms  = mean(farms_impute, na.rm = T)) %>%
+  right_join(gg_base)
+
+anim <- ggplot(gg_anime, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = b_rate), color = "black") +
+  geom_path(data = gg_state, color = "white") +
+  transition_manual(YEAR) +
+  labs(title = "Bankruptcies filed in", 
+       subtitle = "Annualized per 10,000 farms") +
+  scale_fill_viridis_c(limits = c(0, 20), oob = squish) +
+  bank_theme
+animate(anim, width = 1024, height = 768)
+# Uncomment to save
+# anim_save(paste0(figures, "/historical-animate.gif"))
+```
+
+Animated, but with red scale:
+
+```{r animate-albers-red}
+anim <- ggplot(gg_anime, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = b_rate), color = "grey") +
+  geom_path(data = gg_state, color = "grey50") +
+  transition_manual(YEAR) +
+  labs(title = "Bankruptcies filed in", 
+       subtitle = "Annualized per 10,000 farms") +
+  scale_fill_gradient(low = "white", high = "red",
+                      limits = c(0, 20), oob = squish) +
+  bank_theme
+animate(anim, width = 1024, height = 768)
+# Uncomment to save
+# anim_save(paste0(figures, "/historical-animate-red.gif"))
+```
