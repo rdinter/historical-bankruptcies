@@ -108,7 +108,9 @@ xls_f2 <- map(f2_files, function(x){
 
 # Need to read in the two missing xls files (2004-12-31 and 2005-03-31),
 #  which are only PDFs
+# devtools::install_github("ropensci/tabulizer")
 library("tabulizer")
+# sudo R CMD javareconf <- for eventual ubuntu error
 
 f2_pdf <- dir(data_source, full.names = T, pattern = ".pdf")
 f2_pdf <- f2_pdf[grepl("2004_12_31|2005_03_31", f2_pdf)]

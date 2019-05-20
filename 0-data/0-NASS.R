@@ -27,7 +27,7 @@ operations <- operations %>%
   select(YEAR = year, FARMS = Value) %>% 
   arrange(YEAR) %>% 
   mutate(FARM_CHANGE = FARMS - lag(FARMS),
-         FARM_PCT_CHANGE = scales::percent(FARM_CHANGE / lag(FARMS)))
+         FARM_PCT_CHANGE = FARM_CHANGE / lag(FARMS))
 
 write_csv(operations, paste0(local_dir, "/operations.csv"))
 
@@ -45,7 +45,25 @@ state_farms <- state_farms %>%
   arrange(YEAR, STATE) %>% 
   group_by(STATE) %>% 
   mutate(FARM_CHANGE = FARMS - lag(FARMS),
-         FARM_PCT_CHANGE = scales::percent(FARM_CHANGE / lag(FARMS)))
-
+         FARM_PCT_CHANGE = FARM_CHANGE / lag(FARMS))
 
 write_csv(state_farms, paste0(local_dir, "/operations_state.csv"))
+
+# ---- county-farms -------------------------------------------------------
+
+county_farms <- nass_data(source_desc = "CENSUS", agg_level_desc = "COUNTY",
+                         commodity_desc = "FARM OPERATIONS",
+                         short_desc = "FARM OPERATIONS - NUMBER OF OPERATIONS",
+                         domain_desc = "TOTAL",
+                         numeric_vals = T)
+
+county_farms <- county_farms %>% 
+  mutate(FIPS = paste0(state_fips_code, county_code)) %>% 
+  select(YEAR = year, FARMS = Value, FIPS) %>% 
+  arrange(YEAR, FIPS) %>% 
+  group_by(FIPS) %>% 
+  mutate(FARM_CHANGE = FARMS - lag(FARMS),
+         FARM_PCT_CHANGE = FARM_CHANGE / lag(FARMS))
+
+
+write_csv(county_farms, paste0(local_dir, "/operations_county.csv"))

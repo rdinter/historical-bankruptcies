@@ -25,6 +25,7 @@ ch12_limits <- tribble(
   "2016-04-01", "$4,153,150", "$1,924,550",
   "2019-04-01", "$4,411,400", "$2,044,225"
 )
+# Updates: Title 11 Chapter 1 Sec. 104 http://uscode.house.gov/browse/prelim@title11/chapter12/subchapter1&edition=prelim
 ```
 
 ```{r global_options, include=FALSE}
