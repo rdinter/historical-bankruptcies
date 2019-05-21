@@ -33,19 +33,42 @@ write_csv(operations, paste0(local_dir, "/operations.csv"))
 
 
 # ---- state-farms --------------------------------------------------------
+# 
+# Census, which limits the number of observations
+# state_farms <- nass_data(source_desc = "CENSUS", agg_level_desc = "STATE",
+#                          commodity_desc = "FARM OPERATIONS",
+#                          short_desc = "FARM OPERATIONS - NUMBER OF OPERATIONS",
+#                          domain_desc = "TOTAL",
+#                          numeric_vals = T)
+# 
+# state_farms <- state_farms %>% 
+#   select(YEAR = year, FARMS = Value, STATE = state_name) %>% 
+#   arrange(YEAR, STATE) %>% 
+#   group_by(STATE) %>% 
+#   mutate(FARM_CHANGE = FARMS - lag(FARMS),
+#          FARM_PCT_CHANGE = FARM_CHANGE / lag(FARMS))
 
-state_farms <- nass_data(source_desc = "CENSUS", agg_level_desc = "STATE",
-                         commodity_desc = "FARM OPERATIONS",
-                         short_desc = "FARM OPERATIONS - NUMBER OF OPERATIONS",
-                         domain_desc = "TOTAL",
-                         numeric_vals = T)
+state_farms2 <- nass_data(source_desc = "SURVEY", agg_level_desc = "STATE",
+                          commodity_desc = "FARM OPERATIONS",
+                          short_desc = "FARM OPERATIONS - NUMBER OF OPERATIONS",
+                          domain_desc = "TOTAL",
+                          numeric_vals = T)
 
-state_farms <- state_farms %>% 
+# Sometimes, there is an annual value for a state while other times it is a
+#  "point in time" for number of operations. Select annual if it exists,
+#  otherwise keep the point in time
+j5 <- state_farms2 %>% 
+  group_by(year, state_name) %>% 
+  filter(n() == 1 | freq_desc == "ANNUAL") %>% 
+  ungroup()
+
+state_farms <- j5 %>% 
   select(YEAR = year, FARMS = Value, STATE = state_name) %>% 
   arrange(YEAR, STATE) %>% 
   group_by(STATE) %>% 
   mutate(FARM_CHANGE = FARMS - lag(FARMS),
-         FARM_PCT_CHANGE = FARM_CHANGE / lag(FARMS))
+         FARM_PCT_CHANGE = FARM_CHANGE / lag(FARMS)) %>% 
+  distinct()
 
 write_csv(state_farms, paste0(local_dir, "/operations_state.csv"))
 
