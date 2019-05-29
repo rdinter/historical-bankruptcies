@@ -338,3 +338,73 @@ animate(anim, width = 1024, height = 768)
 # Uncomment to save
 # anim_save(paste0(figures, "/historical-animate-red.gif"))
 ```
+
+# Most recent data
+
+```{r recent}
+# Add in aggregated data ...
+gg_first_recent <- j6 %>% 
+  group_by(DISTRICT) %>% 
+  mutate(chap_12_year = zoo::rollsumr(impute, k = 4, na.rm = T, na.pad = T),
+         chap_12_change = chap_12_year - dplyr::lag(chap_12_year, 4)) %>% 
+  filter(DATE == max(DATE)) %>% 
+  right_join(gg_base)
+
+states_recent <- j6 %>% 
+  rename(id = STATE) %>% 
+  group_by(id, DATE) %>% 
+  summarise(impute = sum(impute, na.rm = T)) %>% 
+  ungroup() %>% 
+  group_by(id) %>% 
+  mutate(chap_12_year = zoo::rollsumr(impute, k = 4, na.rm = T, na.pad = T),
+         chap_12_change = chap_12_year - dplyr::lag(chap_12_year, 4)) %>% 
+  filter(DATE == max(DATE)) %>% 
+  right_join(states)
+gg_state_recent <- first %>% 
+  fortify(region = "STATE") %>% 
+  left_join(states_recent)
+
+min_date <- min(filter(j6, DATE > max(DATE) - 367)$DATE)
+max_date <- max(j6$DATE)
+
+sub_title <- paste0("From ", month(min_date, label = T, abbr = F),
+                    " ", year(min_date), " through ",
+                    month(max_date, label = TRUE, abbr = FALSE),
+                    " ", year(max_date), ": ",
+                    prettyNum(sum(j6$CHAP_12[j6$DATE > (min_date + 1)]),
+                              big.mark = ","))
+
+ggplot(gg_first_recent, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = chap_12_year), color = "grey") +
+  geom_path(data = gg_state_recent, color = "grey50") +
+  geom_text(data = subset(gg_state_recent, !(id %in% new_england)),
+            aes(x, y, label = prettyNum(round(chap_12_year), big.mark = ",")),
+            check_overlap = T, size = 6, fontface = "bold") +
+  labs(title = "Total Farm Bankruptcies Filed", 
+       subtitle = sub_title) +
+  scale_fill_gradient(low = "white", high = "red", #limits = c(0, 1000),
+                      oob = squish, label = comma) +
+  bank_theme
+ggsave(paste0(figures, "/recent_raw.png"), width = 13.3, height = 10)
+```
+
+```{r recent-change}
+sub_title <- paste0("From ", month(min_date, label = T, abbr = F),
+                    " ", year(min_date), " through ",
+                    month(max_date, label = TRUE, abbr = FALSE),
+                    " ", year(max_date), ": ",
+                    prettyNum(2*sum(j6$CHAP_12[j6$DATE > (min_date + 1)]) - sum(j6$CHAP_12[j6$DATE > (min_date - 365)]),
+          big.mark = ","))
+
+ggplot(gg_first_recent, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = chap_12_change), color = "grey") +
+  geom_path(data = gg_state_recent, color = "grey50") +
+  geom_text(data = subset(gg_state_recent, !(id %in% new_england)),
+            aes(x, y, label = prettyNum(round(chap_12_change), big.mark = ",")),
+            check_overlap = T, size = 6, fontface = "bold") +
+  labs(title = "Change In Total Farm Bankruptcies Filed", 
+       subtitle = sub_title) +
+  scale_fill_viridis_c(option = "E") +
+  bank_theme
+ggsave(paste0(figures, "/recent_change.png"), width = 13.3, height = 10)
+```
