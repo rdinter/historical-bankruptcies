@@ -4,7 +4,7 @@ author: Robert Dinterman
 date: "`r format(Sys.Date(), '%Y-%B-%d')`"
 output:
   md_document:
-    variant: markdown_github
+    variant: gfm
 ---
 
 ```{r start, include = FALSE}
@@ -29,6 +29,37 @@ qtrly_data <- read_rds("../0-data/uscourts/f2_three/f2_three.rds") %>%
   left_join(farms)
 
 
+fipssues <- c("29510" = 29189, "51510" = 51059, "51515" = 51019,
+              "51540" = 51191, "51560" = 51005, "51570" = 51041,
+              "51580" = 51005, "51590" = 51143, "51595" = 51081,
+              "51600" = 51059, "51610" = 51059, "51620" = 51175,
+              "51630" = 51177, "51640" = 51035, "51660" = 51165,
+              "51670" = 51149, "51678" = 51163, "51683" = 51153,
+              "51685" = 51153, "51690" = 51089, "51720" = 51195,
+              "51730" = 51149, "51750" = 51121, "51770" = 51161,
+              "51775" = 51161, "51780" = 51083, "51790" = 51015,
+              "51820" = 51015, "51840" = 51069, "12025" = 12086,
+              "13150" = 13151, "13510" = 13151, "24007" = 24005,
+              "29193" = 29195, "30113" = 30111, "46113" = 46111)
+
+
+j5 <- read_rds("../0-data/uscourts/f5a/f5a.rds") %>% 
+  mutate(FIPS = ifelse(is.na(fipssues[as.character(FIPS)]),
+                       FIPS, fipssues[as.character(FIPS)])) 
+j6 <- read_rds("../0-data/uscourts/archived/f5a/f5a_goss.rds") %>% 
+  mutate(DATE = as.Date(paste0(YEAR, "-12-31")),
+         FIPS = ifelse(is.na(fipssues[as.character(FIPS)]),
+                       FIPS, fipssues[as.character(FIPS)]))
+
+fed_cross <- read_csv("../junk/fed_district_cross.csv") %>% 
+  select(fips, district) %>% 
+  mutate(FIPS = as.numeric(fips))
+
+
+f5a <- j5 %>% 
+  bind_rows(j6) %>% 
+  arrange(DATE, FIPS) %>% 
+  left_join(fed_cross)
 ```
 
 ```{r global_options, include=FALSE}
@@ -113,7 +144,29 @@ qtrly_data %>%
   scale_color_viridis_d() +
   theme(legend.position = c(0.15, 0.8)) + 
   labs(x = "", y = "", shape = "Quarter", linetype = "Quarter",
-       title = "National Chapter 12 Filings")
+       title = "National Chapter 12 Filings",
+       subtitle = "quarterly")
+```
+
+```{r 12-month-bapcpa}
+qtrly_data %>% 
+  group_by(DATE) %>% 
+  summarise(CHAP_12 = sum(impute, na.rm = T),
+            Quarter = factor(mean(quarter), levels = c(1, 2, 3, 4))) %>% 
+  mutate(CHAP_12 = zoo::rollsumr(CHAP_12, k = 4, fill = NA)) %>% 
+  filter(DATE > "2005-10-17") %>% 
+  ggplot(aes(DATE, CHAP_12)) +
+  geom_line(aes(group = Quarter, color = Quarter, linetype = Quarter)) +
+  # geom_point(data = . %>% filter(qtr == 2)) +
+  geom_point(aes(color = Quarter, shape = Quarter)) +
+  theme_minimal() +
+  scale_x_date(date_labels = "%Y",
+               limits = as.Date(c("2005-01-01", "2020-01-01"))) +
+  # scale_y_continuous(limits = c(0, 225)) +
+  scale_color_viridis_d() +
+  theme(legend.position = c(0.15, 0.8)) + 
+  labs(x = "", y = "", shape = "Quarter", linetype = "Quarter",
+       title = "National Chapter 12 Filings", subtitle = "for preceeding 12 months")
 ```
 
 ```{r national-monthly}
@@ -138,6 +191,40 @@ ggplot(month_nat, aes(DATE, 120000*CHAP_12_mth / farms)) +
        caption = "source: US Courts, Robert Dinterman") +
   expand_limits(y = 0) +
   theme_minimal()
+```
+
+## By Federal District Regions
+
+```{r fed-district-bapcpa}
+
+# Post BAPCPA Chapter 12 by Federal Reserve Districts
+f5a %>% 
+  filter(!is.na(district), DATE > "2005-10-17") %>%
+  group_by(DATE, district) %>% 
+  summarise(chap_12 = sum(CHAP_12, na.rm = T)) %>% 
+  ggplot(aes(DATE, chap_12)) +
+  geom_line() +
+  facet_wrap(~district) +
+  theme_linedraw() +
+  labs(title = paste0("Chapter 12 Bankruptcies Filed by ",
+                      "Federal Reserve District Post-BAPCPA"),
+       subtitle = "previous 12-month period",
+       x = "", y = "")
+```
+
+```{r fed-district}
+f5a %>% 
+  filter(!is.na(district)) %>%
+  group_by(DATE, district) %>% 
+  summarise(chap_12 = sum(CHAP_12, na.rm = T)) %>% 
+  ggplot(aes(DATE, chap_12)) +
+  geom_line() +
+  facet_wrap(~district) +
+  theme_linedraw() +
+  expand_limits(x = as.Date(c("1989-01-01", NA))) +
+  labs(title = "Chapter 12 Bankruptcies Filed by Federal Reserve District",
+       subtitle = "previous 12-month period",
+       x = "", y = "")
 ```
 
 
