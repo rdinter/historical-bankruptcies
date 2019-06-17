@@ -29,6 +29,6 @@ map2(link_files, links, function(x, y){
     
     # In case the file doesn't exist:
     if (temp$status_code > 400) return()
-    download.file(y, x)
+    download.file(y, x, mode = "wb")
   }
 })

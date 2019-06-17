@@ -57,7 +57,8 @@ files <- map(urls, function(x){
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
-      download.file(paste0("http://www.uscourts.gov", files), file_name)
+      download.file(paste0("http://www.uscourts.gov", files), file_name,
+                    mode = "wb")
     }
   })
   
@@ -115,7 +116,8 @@ files <- map(urls, function(x){
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
-      download.file(paste0("http://www.uscourts.gov", files), file_name)
+      download.file(paste0("http://www.uscourts.gov", files), file_name,
+                    mode = "wb")
     }
   })
   
@@ -172,7 +174,8 @@ files <- map(urls, function(x){
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
-      download.file(paste0("http://www.uscourts.gov", files), file_name)
+      download.file(paste0("http://www.uscourts.gov", files), file_name,
+                    mode = "wb")
     }
   })
   
@@ -229,7 +232,8 @@ files <- map(urls, function(x){
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
-      download.file(paste0("http://www.uscourts.gov", files), file_name)
+      download.file(paste0("http://www.uscourts.gov", files), file_name,
+                    mode = "wb")
     }
   })
   
@@ -290,7 +294,8 @@ files <- map(urls, function(x){
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
-      download.file(paste0("http://www.uscourts.gov", files), file_name)
+      download.file(paste0("http://www.uscourts.gov", files), file_name,
+                    mode = "wb")
     }
   })
   
