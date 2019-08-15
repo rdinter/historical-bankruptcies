@@ -69,7 +69,7 @@ opts_chunk$set(cache = TRUE, echo = FALSE, warning = FALSE,
 
 # General Figures of Interest
 
-## Individual Series
+## Chapter 12 Filings since passage in 1986
 
 ```{r national-annual}
 annual_nat <- qtrly_data %>% 
@@ -126,6 +126,8 @@ ggplot(quarter_nat, aes(DATE, 40000*CHAP_12_qtr / farms)) +
   expand_limits(y = 0) +
   theme_minimal()
 ```
+
+## Chapter 12 Filings since Bankruptcy Abuse Prevention and Consumer Protection Act of 2005
 
 ```{r qtrly-bapcpa}
 qtrly_data %>% 
