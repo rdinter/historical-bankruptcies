@@ -1,10 +1,12 @@
 # General Figures of Interest
 
-## Individual Series
+## Chapter 12 Filings since passage in 1986
 
 <img src="2-eda-time_files/figure-gfm/national-annual-1.png" width="100%" height="100%" /><img src="2-eda-time_files/figure-gfm/national-annual-2.png" width="100%" height="100%" />
 
 <img src="2-eda-time_files/figure-gfm/national-quarter-1.png" width="100%" height="100%" /><img src="2-eda-time_files/figure-gfm/national-quarter-2.png" width="100%" height="100%" />
+
+## Chapter 12 Filings since Bankruptcy Abuse Prevention and Consumer Protection Act of 2005
 
 <img src="2-eda-time_files/figure-gfm/qtrly-bapcpa-1.png" width="100%" height="100%" />
 

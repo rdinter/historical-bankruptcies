@@ -1,3 +1,14 @@
+Most recent data
+================
+
+<img src="2-eda-maps_files/figure-markdown_github/recent-1.png" width="100%" height="100%" />
+
+<img src="2-eda-maps_files/figure-markdown_github/recent-rate-1.png" width="100%" height="100%" />
+
+<img src="2-eda-maps_files/figure-markdown_github/recent-rate-state-1.png" width="100%" height="100%" />
+
+<img src="2-eda-maps_files/figure-markdown_github/recent-change-1.png" width="100%" height="100%" />
+
 General Maps of Interest
 ========================
 
@@ -34,10 +45,3 @@ separately to combined reporting):
 Animated, but with red scale:
 
 <img src="2-eda-maps_files/figure-markdown_github/animate-albers-red-1.gif" width="100%" height="100%" />
-
-Most recent data
-================
-
-<img src="2-eda-maps_files/figure-markdown_github/recent-1.png" width="100%" height="100%" />
-
-<img src="2-eda-maps_files/figure-markdown_github/recent-change-1.png" width="100%" height="100%" />
