@@ -75,7 +75,7 @@ opts_chunk$set(cache = TRUE, echo = FALSE, warning = FALSE,
 annual_nat <- qtrly_data %>% 
   filter(!is.na(impute)) %>% 
   group_by(YEAR) %>% 
-  summarise(CHAP_12_nat = sum(impute, na.rm = T),
+  summarise(CHAP_12_nat = sum(impute, na.rm = T)*(4/n()),
             farms = mean(FARMS, na.rm = T),
             DATE = as.Date(paste0(mean(YEAR), "-12-31")))
 
