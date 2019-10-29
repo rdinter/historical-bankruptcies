@@ -134,7 +134,7 @@ bank_theme <-   theme(panel.background = element_rect(fill = "transparent"),
 ```
 
 ```{r global_options, include=FALSE}
-opts_chunk$set(cache = TRUE, echo = FALSE, warning = FALSE,
+opts_chunk$set(cache = FALSE, echo = FALSE, warning = FALSE,
                message = FALSE, out.height = "100%", out.width = "100%")
 ```
 
