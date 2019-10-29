@@ -77,7 +77,8 @@ annual_nat <- qtrly_data %>%
   group_by(YEAR) %>% 
   summarise(CHAP_12_nat = sum(impute, na.rm = T)*(4/n_distinct(DATE)),
             farms = mean(FARMS, na.rm = T),
-            DATE = as.Date(paste0(mean(YEAR), "-12-31")))
+            DATE = as.Date(paste0(mean(YEAR), "-12-31")),
+            rate_12 = 10000*CHAP_12_nat / farms)
 
 ggplot(annual_nat, aes(YEAR, CHAP_12_nat)) +
   geom_line() +
@@ -88,7 +89,7 @@ ggplot(annual_nat, aes(YEAR, CHAP_12_nat)) +
   expand_limits(y = 0) +
   theme_minimal()
 
-ggplot(annual_nat, aes(YEAR, 10000*CHAP_12_nat / farms)) +
+ggplot(annual_nat, aes(YEAR, rate_12)) +
   geom_line() +
   labs(x = "", y = "",
        title = "Annual Chapter 12 Filing Rate",
