@@ -105,3 +105,16 @@ j5 <- county %>%
   complete(DATE, FIPS)
 
 write_csv(j5, paste0(local_dir, "/county_annual.csv"))
+
+county_qtr <- read_rds("0-data/uscourts/f5a/f5a.rds") %>% 
+  # filter(grepl("12/31/", QTR_ENDED)) %>% 
+  select(-NBCHAP_12) %>% 
+  group_by(DATE, FIPS) %>% 
+  summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), ~sum(., na.rm = T)) %>% 
+  ungroup()
+
+j5_qtr <- county_qtr %>% 
+  full_join(goss) %>% 
+  complete(DATE, FIPS)
+
+write_csv(j5_qtr, paste0(local_dir, "/county_12months.csv"))
