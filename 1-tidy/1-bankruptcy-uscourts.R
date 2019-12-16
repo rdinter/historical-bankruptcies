@@ -19,7 +19,7 @@ if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
 dates  <- seq(as.Date("1987/04/01"), Sys.Date(), by = "3 month") - 1
 
 bank_dates  <- read_rds("0-data/uscourts/f2_three/f2_three.rds") %>%
-  expand(nesting(DISTRICT_NS, DISTRICT, CIRCUIT, CIRCUIT_NUM, ST_ABRV),
+  expand(nesting(DISTRICT_NS, DISTRICT, CIRCUIT, CIRCUIT_NUM, ST_ABRV, STATE),
          DATE = dates)
 
 banks  <- read_rds("0-data/uscourts/f2_three/f2_three.rds") %>% 
@@ -59,6 +59,11 @@ banks %>%
   summarise(CHAP_12 = sum(impute, na.rm = T)) %>% 
   write_csv(paste0(local_dir, "/district_quarterly.csv"))
 
+banks %>% 
+  # filter(DATE > "1995-12-30") %>% 
+  group_by(DATE, DISTRICT, STATE, CIRCUIT) %>% 
+  summarise(CHAP_12 = sum(impute, na.rm = T)) %>% 
+  write_csv(paste0(local_dir, "/district_quarterly_imputed.csv"))
 
 banks %>% 
   filter(!is.na(TOTAL_FILINGS)) %>% 
