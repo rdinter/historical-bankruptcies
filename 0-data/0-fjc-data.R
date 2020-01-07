@@ -20,6 +20,9 @@ years <- str_pad(8:parse_number(format(Sys.Date(), "%y")),
                  2, "left", "0")
 links <- paste0("https://www.fjc.gov/sites/default/files/idb/datasets/cpbank",
                 years, ".zip")
+# Links hack for 2019
+links <- append(links, paste0("https://www.fjc.gov/sites/default/files/idb/",
+                              "datasets/cpbank19_0.zip"))
 
 link_files <- paste0(data_source, "/", basename(links))
 
@@ -29,6 +32,7 @@ map2(link_files, links, function(x, y){
     
     # In case the file doesn't exist:
     if (temp$status_code > 400) return()
-    download.file(y, x, mode = "wb")
+    
+    GET(y, write_disk(x, overwrite = TRUE))
   }
 })

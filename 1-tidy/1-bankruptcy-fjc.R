@@ -62,7 +62,8 @@ bus <- read_rds("0-data/fjc/IDB/raw_business_new.rds") %>%
                                       FILEDATE < "2010-04-01" ~ 336900,
                                       FILEDATE < "2013-04-01" ~ 360475,
                                       FILEDATE < "2016-04-01" ~ 383175,
-                                      FILEDATE > "2016-04-01" ~ 394725),
+                                      FILEDATE < "2019-04-01" ~ 394725,
+                                      FILEDATE > "2019-04-01" ~ 419275),
          ch13_sec_limit = case_when(FILEDATE < "1994-04-01" ~ 350000,
                                     FILEDATE < "1998-04-01" ~ 750000,
                                     FILEDATE < "2001-04-01" ~ 807000,
@@ -71,13 +72,15 @@ bus <- read_rds("0-data/fjc/IDB/raw_business_new.rds") %>%
                                     FILEDATE < "2010-04-01" ~ 1010650,
                                     FILEDATE < "2013-04-01" ~ 1081400,
                                     FILEDATE < "2016-04-01" ~ 1149525,
-                                    FILEDATE > "2016-04-01" ~ 1184200),
+                                    FILEDATE < "2019-04-01" ~ 1184200,
+                                    FILEDATE > "2019-04-01" ~ 1257850),
          debt_limit = case_when(FILEDATE < "2005-10-17" ~ 1500000,
-                                FILEDATE < "2008-04-01" ~ 3237000,
-                                FILEDATE < "2011-04-01" ~ 3544525,
-                                FILEDATE < "2014-04-01" ~ 3792650,
-                                FILEDATE < "2017-04-01" ~ 4031575,
-                                FILEDATE > "2017-04-01" ~ 4153150))
+                                FILEDATE < "2007-04-01" ~ 3237000,
+                                FILEDATE < "2010-04-01" ~ 3544525,
+                                FILEDATE < "2013-04-01" ~ 3792650,
+                                FILEDATE < "2016-04-01" ~ 4031575,
+                                FILEDATE < "2019-04-01" ~ 4153150,
+                                FILEDATE > "2019-04-01" ~ 4411400))
 
 # Other variables to consider:
 #  # of creditors - ECRDTRS (estimated)
@@ -95,11 +98,12 @@ farm <- read_rds("0-data/fjc/IDB/raw_ch12s_new.rds") %>%
   # $4,031,575 in 2014
   # $4,153,150 in 2017
   mutate(debt_limit = case_when(FILEDATE < "2005-10-17" ~ 1500000,
-                                FILEDATE < "2008-04-01" ~ 3237000,
-                                FILEDATE < "2011-04-01" ~ 3544525,
-                                FILEDATE < "2014-04-01" ~ 3792650,
-                                FILEDATE < "2017-04-01" ~ 4031575,
-                                FILEDATE > "2017-04-01" ~ 4153150))
+                                FILEDATE < "2007-04-01" ~ 3237000,
+                                FILEDATE < "2010-04-01" ~ 3544525,
+                                FILEDATE < "2013-04-01" ~ 3792650,
+                                FILEDATE < "2016-04-01" ~ 4031575,
+                                FILEDATE < "2019-04-01" ~ 4153150,
+                                FILEDATE > "2019-04-01" ~ 4411400))
 
 j5 <- farm %>% 
   mutate(start = if_else(is.na(ORGFLDT), FILEDATE, ORGFLDT),
