@@ -27,9 +27,14 @@ can also be satisfied if 2 of the previous 3 tax years meet this
 criteria. The debt requirement is that at least 50% (80% for fishermen)
 of outstanding debt is related to farming and total debts do not exceed
 the debt limit which is currently set at $4,411,400 ($2,044,225 for
-fishermen). This is a more strict definition of a farm than what the
-USDA enforces which ensures filers of chapter 12 would be classified as
-farmers or fishermen.
+fishermen) which were [increased on April 1,
+2019](https://www.federalregister.gov/documents/2019/02/12/2019-01903/revision-of-certain-dollar-amounts-in-the-bankruptcy-code-prescribed-under-section-104a-of-the-code).
+This debt limit was further increased to $10,000,000 with the passage of
+the [Family Farmer Relief Act of
+2019](https://delgado.house.gov/media/press-releases/delgado-s-bipartisan-family-farmer-relief-act-signed-law)
+which was signed into law on August 26, 2019. This is a more strict
+definition of a farm than what the USDA enforces which ensures filers of
+chapter 12 would be classified as farmers or fishermen.
 
 However, farmers and fishermen are not limited to only file for chapter
 12 bankruptcy especially those that do not satisfy the income and/or
@@ -49,6 +54,7 @@ chapter 7, 11, and 13.
 | 2013-04-01     | $4,031,575        | $1,868,200           |
 | 2016-04-01     | $4,153,150        | $1,924,550           |
 | 2019-04-01     | $4,411,400        | $2,044,225           |
+| 2019-08-26     | $10,000,000       |                      |
 
 What are bankruptcy trends in recent years?
 -------------------------------------------
@@ -79,6 +85,7 @@ much lower debt limits.
 |  2016|                461|
 |  2017|                501|
 |  2018|                498|
+|  2019|                454|
 
 How do farmer bankruptcies compare to the 1980s when the farm crisis was in effect?
 -----------------------------------------------------------------------------------

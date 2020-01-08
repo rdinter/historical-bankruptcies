@@ -1,7 +1,7 @@
 ---
 title: "Farm Bankruptcies Chapter 12: Primer"
 author: Robert Dinterman
-date: 2019-04-23
+date: 2020-01-08
 output:
   md_document:
     variant: markdown_github
@@ -23,7 +23,8 @@ ch12_limits <- tribble(
   "2010-04-01", "$3,792,650", "$1,757,475",
   "2013-04-01", "$4,031,575", "$1,868,200",
   "2016-04-01", "$4,153,150", "$1,924,550",
-  "2019-04-01", "$4,411,400", "$2,044,225"
+  "2019-04-01", "$4,411,400", "$2,044,225",
+  "2019-08-26", "$10,000,000", ""
 )
 # Updates: Title 11 Chapter 1 Sec. 104 http://uscode.house.gov/browse/prelim@title11/chapter12/subchapter1&edition=prelim
 ```
@@ -41,7 +42,7 @@ opts_chunk$set(cache = FALSE, echo = FALSE, warning = FALSE,
 
 ## Are chapter 12 bankruptcy filings the best numbers to look at to evaluate farming-related bankruptcies?
 
-Chapter 12 bankruptcies can only be filed by farmers or fishermen. To qualify, they must meet the [income and debt requirements](https://www.uscourts.gov/services-forms/bankruptcy/bankruptcy-basics/chapter-12-bankruptcy-basics). The income requirement is that more than 50\% (80\% for fishermen) of gross income in the previous tax year comes from farming, although this can also be satisfied if 2 of the previous 3 tax years meet this criteria. The debt requirement is that at least 50\% (80\% for fishermen) of outstanding debt is related to farming and total debts do not exceed the debt limit which is currently set at \$4,411,400 (\$2,044,225 for fishermen). This is a more strict definition of a farm than what the USDA enforces which ensures filers of chapter 12 would be classified as farmers or fishermen.
+Chapter 12 bankruptcies can only be filed by farmers or fishermen. To qualify, they must meet the [income and debt requirements](https://www.uscourts.gov/services-forms/bankruptcy/bankruptcy-basics/chapter-12-bankruptcy-basics). The income requirement is that more than 50\% (80\% for fishermen) of gross income in the previous tax year comes from farming, although this can also be satisfied if 2 of the previous 3 tax years meet this criteria. The debt requirement is that at least 50\% (80\% for fishermen) of outstanding debt is related to farming and total debts do not exceed the debt limit which is currently set at \$4,411,400 (\$2,044,225 for fishermen) which were [increased on April 1, 2019](https://www.federalregister.gov/documents/2019/02/12/2019-01903/revision-of-certain-dollar-amounts-in-the-bankruptcy-code-prescribed-under-section-104a-of-the-code). This debt limit was further increased to \$10,000,000 with the passage of the [Family Farmer Relief Act of 2019](https://delgado.house.gov/media/press-releases/delgado-s-bipartisan-family-farmer-relief-act-signed-law) which was signed into law on August 26, 2019. This is a more strict definition of a farm than what the USDA enforces which ensures filers of chapter 12 would be classified as farmers or fishermen.
 
 However, farmers and fishermen are not limited to only file for chapter 12 bankruptcy especially those that do not satisfy the income and/or debt tests. They can and do also file for chapter 7, 11, and 13 bankruptcies. Chapter 12 bankruptcies are only a subset of all bankruptcy cases filed by farmers and should be seen as a lower bound estimate for number of farm bankruptcies. Due to data limitations, it is not feasible to track all of the farmers and fishermen filing for chapter 7, 11, and 13.
 
