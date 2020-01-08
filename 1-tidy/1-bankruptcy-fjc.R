@@ -107,7 +107,7 @@ farm <- read_rds("0-data/fjc/IDB/raw_ch12s_new.rds") %>%
 
 j5 <- farm %>% 
   mutate(start = if_else(is.na(ORGFLDT), FILEDATE, ORGFLDT),
-         close = if_else(is.na(CLOSEDT), as.Date("2018-09-30"), CLOSEDT),
+         close = if_else(is.na(CLOSEDT), as.Date("2019-09-30"), CLOSEDT),
          start_year = year(start)) %>% 
   group_by(CASEKEY) %>% 
   arrange(SNAPSHOT) %>% 
