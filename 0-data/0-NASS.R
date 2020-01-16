@@ -79,6 +79,11 @@ county_farms <- nass_data(source_desc = "CENSUS", agg_level_desc = "COUNTY",
                          short_desc = "FARM OPERATIONS - NUMBER OF OPERATIONS",
                          domain_desc = "TOTAL",
                          numeric_vals = T)
+persons <- nass_data(source_desc = "CENSUS", agg_level_desc = "COUNTY",
+                     commodity_desc = "PRODUCERS",
+                     short_desc = "PRODUCERS - PERSONS IN HOUSEHOLD, MEASURED IN PERSONS",
+                     domain_desc = "TOTAL",
+                     numeric_vals = T)
 
 county_farms <- county_farms %>% 
   mutate(FIPS = paste0(state_fips_code, county_code)) %>% 
@@ -88,5 +93,12 @@ county_farms <- county_farms %>%
   mutate(FARM_CHANGE = FARMS - lag(FARMS),
          FARM_PCT_CHANGE = FARM_CHANGE / lag(FARMS))
 
+county_farms <- persons %>% 
+  mutate(FIPS = paste0(state_fips_code, county_code)) %>% 
+  select(YEAR = year, PERSONS = Value, FIPS) %>% 
+  arrange(YEAR, FIPS) %>% 
+  group_by(FIPS) %>% 
+  right_join(county_farms) %>% 
+  select(YEAR, FIPS, everything())
 
 write_csv(county_farms, paste0(local_dir, "/operations_county.csv"))
