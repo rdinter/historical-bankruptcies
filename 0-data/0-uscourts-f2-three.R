@@ -109,6 +109,8 @@ xls_f2 <- map(f2_files, function(x){
 # Need to read in the two missing xls files (2004-12-31 and 2005-03-31),
 #  which are only PDFs
 # devtools::install_github("ropensci/tabulizer")
+# devtools::install_github("ropensci/tabulizerjars", args="--no-multiarch") 
+# devtools::install_github("ropensci/tabulizer", args="--no-multiarch")
 library("tabulizer")
 # sudo R CMD javareconf <- for eventual ubuntu error
 

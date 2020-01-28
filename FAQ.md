@@ -85,7 +85,7 @@ much lower debt limits.
 |  2016|                461|
 |  2017|                501|
 |  2018|                498|
-|  2019|                454|
+|  2019|                601|
 
 How do farmer bankruptcies compare to the 1980s when the farm crisis was in effect?
 -----------------------------------------------------------------------------------

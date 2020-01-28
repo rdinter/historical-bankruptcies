@@ -53,7 +53,7 @@ bus <- read_rds("0-data/fjc/IDB/raw_business_new.rds") %>%
   # 2010 - $360,475 and $1,081,400
   # 2013 - $383,175 and $1,149,525
   # 2016 - $394,725 and $1,184,200
-  # 2019 - ???
+  # 2019 - $419,275 and $1,257,850
   mutate(ch13_unsec_limit = case_when(FILEDATE < "1994-04-01" ~ 100000,
                                       FILEDATE < "1998-04-01" ~ 250000,
                                       FILEDATE < "2001-04-01" ~ 270000,
@@ -93,10 +93,11 @@ farm <- read_rds("0-data/fjc/IDB/raw_ch12s_new.rds") %>%
   # Denote the debt limit at the time of filing
   # $1,500,000 prior to BAPCPA
   # $3,237,000 in 2005, adjusted every 3 years by CPI on April 1
-  # $3,544,525 in 2008
-  # $3,792,650 in 2011
-  # $4,031,575 in 2014
-  # $4,153,150 in 2017
+  # $3,544,525 in 2007
+  # $3,792,650 in 2010
+  # $4,031,575 in 2013
+  # $4,153,150 in 2016
+  # $4,441,400 in 2019
   mutate(debt_limit = case_when(FILEDATE < "2005-10-17" ~ 1500000,
                                 FILEDATE < "2007-04-01" ~ 3237000,
                                 FILEDATE < "2010-04-01" ~ 3544525,
