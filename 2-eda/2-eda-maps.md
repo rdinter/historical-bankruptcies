@@ -3,6 +3,8 @@ Most recent data
 
 <img src="2-eda-maps_files/figure-markdown_github/recent-1.png" width="100%" height="100%" />
 
+<img src="2-eda-maps_files/figure-markdown_github/recent-state-1.png" width="100%" height="100%" />
+
 <img src="2-eda-maps_files/figure-markdown_github/recent-rate-1.png" width="100%" height="100%" />
 
 <img src="2-eda-maps_files/figure-markdown_github/recent-rate-state-1.png" width="100%" height="100%" />
