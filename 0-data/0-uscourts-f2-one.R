@@ -24,7 +24,7 @@ f2_files <- dir(data_source, full.names = T, pattern = ".xls")
 #  to how they now lump chapters 9, 12, and 15
 
 xls_f2 <- map(f2_files, function(x){
-  f2_date <- str_sub(basename(x), 8, 17)
+  f2_date <- str_replace_all(str_sub(basename(x), 8, 17), "_", "/")
   print(f2_date)
   f2_sheets <- excel_sheets(x)
   
