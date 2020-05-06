@@ -181,7 +181,7 @@ ggplot(gg_first_recent, aes(long, lat, group = group)) +
   geom_text(data = subset(gg_state_recent, !(id %in% new_england)),
             aes(x, y, label = prettyNum(round(chap_12_year), big.mark = ",")),
             check_overlap = T, size = 6, fontface = "bold") +
-  labs(title = "Total Farm Bankruptcies Filed", 
+  labs(title = "Total Chapter 12 Bankruptcies Filed", 
        subtitle = sub_title) +
   scale_fill_gradient(low = "white", high = "red", #limits = c(0, 1000),
                       oob = squish, label = comma) +
@@ -196,7 +196,7 @@ ggplot(gg_state_recent, aes(long, lat, group = group)) +
   geom_text(data = subset(gg_state_recent, !(id %in% new_england)),
             aes(x, y, label = prettyNum(round(chap_12_year), big.mark = ",")),
             check_overlap = T, size = 6, fontface = "bold") +
-  labs(title = "Total Farm Bankruptcies Filed", 
+  labs(title = "Total Chapter 12 Bankruptcies Filed", 
        subtitle = sub_title) +
   scale_fill_gradient(low = "white", high = "red", #limits = c(0, 1000),
                       oob = squish, label = comma) +
@@ -219,7 +219,7 @@ ggplot(gg_first_recent, aes(long, lat, group = group)) +
   geom_text(data = subset(gg_state_recent, !(id %in% new_england)),
             aes(x, y, label = prettyNum(round(chap_12_rate, digits = 2), big.mark = ",")),
             check_overlap = T, size = 6, fontface = "bold") +
-  labs(title = "Total Farm Bankruptcies Filed per 10,000 Farms", 
+  labs(title = "Total Chapter 12 Bankruptcies Filed per 10,000 Farms", 
        subtitle = sub_title) +
   scale_fill_gradient(low = "white", high = "red", limits = c(0, 10),
                       oob = squish, label = comma) +
@@ -241,7 +241,7 @@ ggplot(gg_state_recent, aes(long, lat, group = group)) +
   geom_text(data = subset(gg_state_recent, !(id %in% new_england)),
             aes(x, y, label = prettyNum(round(chap_12_rate, digits = 2), big.mark = ",")),
             check_overlap = T, size = 6, fontface = "bold") +
-  labs(title = "Total Farm Bankruptcies Filed per 10,000 Farms", 
+  labs(title = "Total Chapter 12 Bankruptcies Filed per 10,000 Farms", 
        subtitle = sub_title) +
   scale_fill_gradient(low = "white", high = "red", limits = c(0, 10),
                       oob = squish, label = comma) +
@@ -264,7 +264,7 @@ ggplot(gg_first_recent, aes(long, lat, group = group)) +
   geom_text(data = subset(gg_state_recent, !(id %in% new_england)),
             aes(x, y, label = prettyNum(round(chap_12_change), big.mark = ",")),
             check_overlap = T, size = 6, fontface = "bold") +
-  labs(title = "Change In Total Farm Bankruptcies Filed", 
+  labs(title = "Change In Total Chapter 12 Bankruptcies Filed", 
        subtitle = sub_title) +
   scale_fill_viridis_c(option = "E") +
   bank_theme
@@ -288,7 +288,7 @@ ggplot(gg_first_bapcpa, aes(long, lat, group = group)) +
   geom_text(data = subset(gg_state_bapcpa, !(id %in% new_england)),
             aes(x, y, label = round(b_rate, 2)),
             check_overlap = T, size = 6, fontface = "bold") +
-  labs(title = "Farm Bankruptcies filed per 10,000 farms", 
+  labs(title = "Chapter 12 Bankruptcies filed per 10,000 farms", 
        subtitle = sub_title) +
   scale_fill_gradient(low = "white", high = "red",
                       limits = c(0, 10), oob = squish) +
@@ -338,7 +338,7 @@ ggplot(gg_first_bapcpa, aes(long, lat, group = group)) +
   geom_text(data = subset(gg_state_bapcpa, !(id %in% new_england)),
             aes(x, y, label = prettyNum(round(CHAP_12), big.mark = ",")),
             check_overlap = T, size = 6, fontface = "bold") +
-  labs(title = "Total Farm Bankruptcies Filed", 
+  labs(title = "Total Chapter 12 Bankruptcies Filed", 
        subtitle = sub_title) +
   scale_fill_gradient(low = "white", high = "red", #limits = c(0, 1000),
                       oob = squish, label = comma) +
@@ -400,7 +400,7 @@ ggplot(gg_first, aes(long, lat, group = group)) +
   geom_text(data = subset(gg_state, !(id %in% new_england)),
             aes(x, y, label = round(b_rate, 2)),
             check_overlap = T, size = 6, fontface = "bold") +
-  labs(title = "Farm Bankruptcies filed per 10,000 farms", 
+  labs(title = "Chapter 12 Bankruptcies filed per 10,000 farms", 
        subtitle = sub_title) +
   scale_fill_gradient(low = "white", high = "red",
                       limits = c(0, 10), oob = squish) +
@@ -422,7 +422,7 @@ ggplot(gg_first, aes(long, lat, group = group)) +
   geom_text(data = subset(gg_state, !(id %in% new_england)),
             aes(x, y, label = prettyNum(round(CHAP_12), big.mark = ",")),
             check_overlap = T, size = 6, fontface = "bold") +
-  labs(title = "Total Farm Bankruptcies Filed", 
+  labs(title = "Total Chapter 12 Bankruptcies Filed", 
        subtitle = sub_title) +
   scale_fill_gradient(low = "white", high = "red",
                       # limits = c(0, 10000), oob = squish,
