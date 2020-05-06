@@ -11,8 +11,8 @@ Most recent data
 
 <img src="2-eda-maps_files/figure-markdown_github/recent-change-1.png" width="100%" height="100%" />
 
-General Maps of Interest
-========================
+<img src="2-eda-maps_files/figure-markdown_github/recent-change-state-1.png" width="100%" height="100%" />
+\# General Maps of Interest
 
 All bankruptcy filings since BAPCPA came into effect as a rate:
 

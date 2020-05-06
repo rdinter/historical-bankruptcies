@@ -271,6 +271,26 @@ ggplot(gg_first_recent, aes(long, lat, group = group)) +
 ggsave(paste0(figures, "/recent_change.png"), width = 13.3, height = 10)
 ```
 
+```{r recent-change-state}
+sub_title <- paste0("From ", month(min_date, label = T, abbr = F),
+                    " ", year(min_date), " through ",
+                    month(max_date, label = TRUE, abbr = FALSE),
+                    " ", year(max_date), ": ",
+                    prettyNum(2*sum(j6$CHAP_12[j6$DATE > (min_date + 1)]) - sum(j6$CHAP_12[j6$DATE > (min_date - 365)]),
+          big.mark = ","))
+
+ggplot(gg_state_recent, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = chap_12_change), color = "grey") +
+  geom_path(data = gg_state_recent, color = "grey50") +
+  geom_text(data = subset(gg_state_recent, !(id %in% new_england)),
+            aes(x, y, label = prettyNum(round(chap_12_change), big.mark = ",")),
+            check_overlap = T, size = 6, fontface = "bold") +
+  labs(title = "Change In Total Chapter 12 Bankruptcies Filed", 
+       subtitle = sub_title) +
+  scale_fill_viridis_c(option = "E") +
+  bank_theme
+ggsave(paste0(figures, "/recent_change_state.png"), width = 13.3, height = 10)
+```
 # General Maps of Interest
 
 All bankruptcy filings since BAPCPA came into effect as a rate:
