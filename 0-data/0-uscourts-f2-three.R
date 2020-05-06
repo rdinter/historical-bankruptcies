@@ -158,7 +158,7 @@ circuits <- c("10TH", "11TH", "1ST", "2ND", "3RD", "4TH",
 f2_three <- f2_three %>% 
   filter(!(DISTRICT_NS %in% circuits)) %>% 
   mutate_at(vars(-DISTRICT_NS, -DATE),
-            funs(as.integer(gsub(",", "", .))))
+            list(~as.integer(gsub(",", "", .))))
 
 f2_three[is.na(f2_three)] <- 0
 

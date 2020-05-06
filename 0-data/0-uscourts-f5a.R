@@ -99,7 +99,7 @@ txt_f5a <- map(f5a_txt_files, function(x){
   results <- results %>% 
     filter(!is.na(FIPS)) %>% 
     mutate_at(vars(TOTAL_FILINGS:NBCHAP_13),
-              funs(as.integer(gsub(",", "", .))))
+              list(~as.integer(gsub(",", "", .))))
   results[is.na(results)] <- 0
   
   results$DATE <- str_sub(basename(x), 5, 14)
@@ -153,7 +153,7 @@ xls_f5a <- map(f5a_files, function(x){
   results <- results %>% 
     filter(!is.na(FIPS)) %>% 
     mutate_at(vars(TOTAL_FILINGS:NBCHAP_13),
-              funs(as.integer(gsub(",", "", .))))
+              list(~as.integer(gsub(",", "", .))))
   results[is.na(results)] <- 0
   
   file_date <- basename(x) %>% 
@@ -194,7 +194,7 @@ xls_f5a <- map(f5a_files, function(x){
     results2 <- results2 %>% 
       filter(!is.na(FIPS)) %>% 
       mutate_at(vars(TOTAL_FILINGS:OTHERS),
-                funs(as.integer(gsub(",", "", .))))
+                list(~as.integer(gsub(",", "", .))))
     results2[is.na(results2)] <- 0
     
     done   <- grep("GAS", toupper(results2$DISTRICT_NS))

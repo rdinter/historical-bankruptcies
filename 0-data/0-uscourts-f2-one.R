@@ -150,7 +150,7 @@ xls_f2 <- map(f2_files, function(x){
   # Hack for 2018-09-30 and beyond
   results <- results %>% 
     group_by(DISTRICT_NS, DATE, month) %>% 
-    summarise_all(funs(first(na.omit(.))))
+    summarise_all(list(~first(na.omit(.))))
   
   return(results)
 })
@@ -221,7 +221,7 @@ circuits <- c("10TH", "11TH", "1ST", "2ND", "3RD", "4TH",
 f2_one <- f2_one %>% 
   filter(!(DISTRICT_NS %in% circuits)) %>% 
   mutate_at(vars(-DISTRICT_NS, -DATE, -month),
-            funs(str_replace(., "-", "0"))) %>% 
+            list(~str_replace(., "-", "0"))) %>% 
   mutate_at(vars(-DISTRICT_NS, -DATE, -month),
             parse_number)
 
