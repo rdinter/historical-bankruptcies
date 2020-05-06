@@ -5,8 +5,8 @@
 # ---- data ---------------------------------------------------------------
 
 # Download new data from USCourts.gov and FJC
-source("0-data/0-uscourts-data.R")
-source("0-data/0-fjc-data.R")
+source("0-data/0-uscourts-data.R") # new updates takes about 20 minutes dl time
+source("0-data/0-fjc-data.R") # WARINING: this is a large download
 # not needed anymore:
 # source("0-uscourts-counties.R") # 0-data/uscourts/district_counties.csv
 
