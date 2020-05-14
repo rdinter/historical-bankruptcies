@@ -21,6 +21,15 @@ districts <- read_csv("0-data/fjc/district_cross.csv") %>%
   rename_all(toupper)
 
 fjc_files <- dir(data_source, full.names = T)
+fjc_files <- fjc_files[!grepl("on_0", fjc_files)]
+
+# All as a tsv -- runs into memory issues due to >= 4GB file
+# j5_tsv <- read_tsv("0-data/fjc/IDB/raw/cpbank08on_0.zip",
+#                    col_types = cols(.default = "c"))
+# j5_vroom <- vroom::vroom("0-data/fjc/IDB/raw/cpbank08on_0.zip",
+#                          delim = "\t",
+#                          col_types = cols(.default = "c"))
+# j5_fread <- data.table::fread("unzip -p 0-data/fjc/IDB/raw/cpbank08on_0.zip")
 
 j5 <- map(fjc_files, read_sas)
 
@@ -132,7 +141,9 @@ pre_bapcpa_fdsp <- function(x, y) {
 bus <- j5 %>% 
   map(function(x) filter(x, NTRDBT == "b")) %>% 
   bind_rows() %>% 
-  mutate(org_chap  = if_else(FILEDATE < "2005-10-16",
+  # CASEKEY changed in 2019 to not include the BK component
+  mutate(CASEKEY = str_remove(CASEKEY, "BK"),
+         org_chap  = if_else(FILEDATE < "2005-10-16",
                              pre_bapcpa_chp(ORGFLCHP),
                              chp(ORGFLCHP)),
          crnt_chap = if_else(FILEDATE < "2005-10-16",
@@ -157,7 +168,9 @@ write_rds(bus, paste0(local_dir, "/raw_business_new.rds"))
 banks <- j5 %>% 
   map(function(x) {
     x %>% 
-      mutate(org_chap  = if_else(FILEDATE < "2005-10-16",
+      # CASEKEY changed in 2019 to not include the BK component
+      mutate(CASEKEY = str_remove(CASEKEY, "BK"),
+             org_chap  = if_else(FILEDATE < "2005-10-16",
                                  pre_bapcpa_chp(ORGFLCHP),
                                  chp(ORGFLCHP)),
              crnt_chap = if_else(FILEDATE < "2005-10-16",

@@ -18,8 +18,13 @@
 library("lubridate")
 library("stringr")
 library("tidyverse")
-library("zipcode")
-data(zipcode)
+
+zipcode <- read_rds("0-data/zipcodes/zip_codes.rds") %>% 
+  select(zip, latitude, longitude) %>% 
+  mutate(zip = as.character(zip))
+
+# library("zipcode")
+# data(zipcode)
 
 meann <- function(x) mean(x, na.rm = T)
 sumn  <- function(x) sum(x, na.rm = T)
@@ -80,7 +85,8 @@ bus <- read_rds("0-data/fjc/IDB/raw_business_new.rds") %>%
                                 FILEDATE < "2013-04-01" ~ 3792650,
                                 FILEDATE < "2016-04-01" ~ 4031575,
                                 FILEDATE < "2019-04-01" ~ 4153150,
-                                FILEDATE > "2019-04-01" ~ 4411400))
+                                FILEDATE < "2019-08-23" ~ 4411400,
+                                FILEDATE > "2019-08-23" ~ 10000000))
 
 # Other variables to consider:
 #  # of creditors - ECRDTRS (estimated)
@@ -104,7 +110,8 @@ farm <- read_rds("0-data/fjc/IDB/raw_ch12s_new.rds") %>%
                                 FILEDATE < "2013-04-01" ~ 3792650,
                                 FILEDATE < "2016-04-01" ~ 4031575,
                                 FILEDATE < "2019-04-01" ~ 4153150,
-                                FILEDATE > "2019-04-01" ~ 4411400))
+                                FILEDATE < "2019-08-23" ~ 4411400,
+                                FILEDATE > "2019-08-23" ~ 10000000))
 
 j5 <- farm %>% 
   mutate(start = if_else(is.na(ORGFLDT), FILEDATE, ORGFLDT),

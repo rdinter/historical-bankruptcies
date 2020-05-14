@@ -26,6 +26,9 @@ links <- append(links, paste0("https://www.fjc.gov/sites/default/files/idb/",
 
 link_files <- paste0(data_source, "/", basename(links))
 
+# Certificate error correction:
+set_config(config(ssl_verifypeer = 0L))
+
 map2(link_files, links, function(x, y){
   if (!file.exists(x)) {
     temp   <- GET(y)
@@ -36,3 +39,15 @@ map2(link_files, links, function(x, y){
     GET(y, write_disk(x, overwrite = TRUE))
   }
 })
+
+# File for the 2008 onward:
+link08_on <- "https://www.fjc.gov/sites/default/files/idb/textfiles/cpbank08on_0.zip"
+file08_on <- paste0(data_source, "/", basename(link08_on))
+if (!file.exists(file08_on)) {
+  temp   <- GET(link08_on)
+  
+  # In case the file doesn't exist:
+  if (temp$status_code > 400) return()
+  
+  GET(link08_on, write_disk(file08_on, overwrite = TRUE))
+}
