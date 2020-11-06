@@ -37,3 +37,5 @@
 ## General Bankruptcy Trends
 
 <img src="2-eda-time_files/figure-gfm/national-quarter-general-1.png" width="100%" height="100%" />
+
+<img src="2-eda-time_files/figure-gfm/national-quarter-all-1.png" width="100%" height="100%" />

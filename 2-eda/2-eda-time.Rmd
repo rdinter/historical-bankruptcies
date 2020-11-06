@@ -252,10 +252,9 @@ f5a %>%
 ```{r national-quarter-general}
 qtrly_data %>%
   filter(DATE > "2001-01-01") %>%
-  select(DATE, "Chapter 7" = BCHAP_7, "Chapter 11" = BCHAP_11,
-         "Chapter 12" = CHAP_12, "Chapter 13" = BCHAP_13) %>% 
+  select(DATE, BCHAP_7, BCHAP_11, CHAP_12, BCHAP_13) %>%
   group_by(DATE) %>%
-  summarise_all(~sum(., na.rm = T)) %>% 
+  summarise_all(~sum(., na.rm = T)) %>%
   gather(chap, val, -DATE) %>%
   ggplot(aes(DATE, val, group = chap)) +
   geom_line() +
@@ -269,6 +268,23 @@ qtrly_data %>%
 ```
 
 
+```{r national-quarter-all}
+qtrly_data %>%
+  filter(DATE > "2005-01-01") %>%
+  select(DATE, CHAP_7, CHAP_11, CHAP_12, CHAP_13) %>%
+  group_by(DATE) %>%
+  summarise_all(~sum(., na.rm = T)) %>%
+  gather(chap, val, -DATE) %>%
+  ggplot(aes(DATE, val, group = chap)) +
+  geom_line() +
+  facet_wrap(~chap, scales = "free_y") +
+  labs(x = "", y = "",
+       title = "Quarterly Bankruptcy Filings",
+       caption = "source: US Courts, Robert Dinterman") +
+  scale_y_continuous(label = comma) +
+  expand_limits(y = 0) +
+  theme_minimal()
+```
 
 
 
