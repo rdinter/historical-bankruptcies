@@ -75,9 +75,13 @@ farm <- read_rds("0-data/fjc/IDB/raw_ch12s_new.rds") %>%
                                 FILEDATE < "2019-08-23" ~ 4411400,
                                 FILEDATE > "2019-08-23" ~ 10000000))
 
+# Extract out the latest date of a close, convert it to date and use for the
+#  open cases.
+end_fy_date <- as.Date(paste0(max(farm$CLOSECY, na.rm = T), "-09-30"))
+
 j5 <- farm %>% 
   mutate(start = if_else(is.na(ORGFLDT), FILEDATE, ORGFLDT),
-         close = if_else(is.na(CLOSEDT), as.Date("2019-09-30"), CLOSEDT),
+         close = if_else(is.na(CLOSEDT), end_fy_date, CLOSEDT),
          start_year = year(start)) %>% 
   group_by(CASEKEY) %>% 
   arrange(SNAPSHOT) %>% 
@@ -183,9 +187,13 @@ mutate(ch13_unsec_limit = case_when(FILEDATE < "1994-04-01" ~ 100000,
                               FILEDATE < "2019-08-23" ~ 4411400,
                               FILEDATE > "2019-08-23" ~ 10000000))
 
+# Extract out the latest date of a close, convert it to date and use for the
+#  open cases.
+end_fy_date <- as.Date(paste0(max(farm$CLOSECY, na.rm = T), "-09-30"))
+
 j5 <- bus %>%
   mutate(start = if_else(is.na(ORGFLDT), FILEDATE, ORGFLDT),
-         close = if_else(is.na(CLOSEDT), as.Date("2019-09-30"), CLOSEDT),
+         close = if_else(is.na(CLOSEDT), end_fy_date, CLOSEDT),
          start_year = year(start)) %>%
   group_by(CASEKEY) %>%
   arrange(SNAPSHOT) %>%
