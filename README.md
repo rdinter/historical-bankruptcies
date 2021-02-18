@@ -20,6 +20,9 @@ For most users, the raw data are of the most importance and they are referenced 
 - Raw data can be found in the [0-data](0-data)
 - Tidy data can be found in [1-tidy](1-tidy)
 - Some generic figures can be found in [2-eda](2-eda)
+    - [National Time Series](2-eda/2-eda-time) of chapter 12 filings. From 1986 onward as well as 2005 onward to reflect the BAPCPA influence. 
+    - [National Maps](2-eda/2-eda-maps) of chapter 12 filings by either court districts or state.
+    - [National Maps with Location](2-eda/2-eda-maps-fjc) of chapter 12 filings from October 2007 onward
 
 ## Packages Needed
 

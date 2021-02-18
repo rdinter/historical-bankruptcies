@@ -1,0 +1,223 @@
+---
+title: "Chapter 12 Filing Maps"
+author: Robert Dinterman
+date: "`r format(Sys.Date(), '%Y-%B-%d')`"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+```{r start, include = FALSE}
+#devtools::install_github("rdinter/albersusa")
+library("albersusa")
+library("gganimate")
+library("knitr")
+library("lubridate")
+library("maptools")
+library("scales")
+library("sp")
+library("spdplyr")
+library("tidyverse")
+library("zoo")
+
+local_dir   <- "../2-eda"
+figures     <- paste0(local_dir, "/figures")
+if (!file.exists(local_dir)) dir.create(local_dir)
+if (!file.exists(figures)) dir.create(figures)
+
+fyear <- function(x) year(x) + (month(x) > 9)
+
+theme_map <- function(...) {
+  theme_minimal() +
+    theme(
+      text = element_text(family = "Ubuntu Regular", color = "#22211d"),
+      axis.line = element_blank(),
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      # panel.grid.minor = element_line(color = "#ebebe5", size = 0.2),
+      panel.grid.major = element_line(color = "#ebebe5", size = 0.2),
+      panel.grid.minor = element_blank(),
+      plot.background = element_rect(fill = "transparent", color = NA), 
+      panel.background = element_rect(fill = "transparent", color = NA), 
+      legend.background = element_rect(fill = "transparent", color = NA),
+      legend.position = "bottom",
+      panel.border = element_blank(),
+      ...
+    )
+}
+
+ch12 <- read_rds("../1-tidy/bankruptcy/ch12_bankruptcy.rds") %>% 
+  # filter(start > start_date) %>% 
+  mutate(start_year = as.integer(start_year),
+         start_fyear = fyear(start),
+         qtr_year = as.Date(as.yearqtr(start)),
+         state = substr(DISTRICT_NS, 1, 2))
+
+ch12_points <- ch12 %>% 
+  filter(!(state %in% c("AK", "HI", "PR")), !is.na(state)) %>% 
+  select(CASEKEY, lat, long, start, start_fyear, close,
+         assets, liabilities, real_property, income_average)
+
+states <- map_data("state")
+usamap <- ggplot(states, aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", colour = "black")
+
+# Expand the data to long by each month they exist
+huh <- ch12_points %>%
+  group_by(CASEKEY) %>%
+  do(data.frame(CASEKEY = .$CASEKEY, long = .$long, lat = .$lat,
+                assets = .$assets, liabilities = .$liabilities,
+                real_property = .$real_property,
+                income_average = .$income_average,
+                month = seq(.$start,.$close, by = "1 month"))) %>% 
+  mutate(month_alt = ceiling_date(month, "month") - 1,
+         assets_fct = case_when(assets < 1e7 ~ "< $1,000,000",
+                                assets < 2e7 ~ "< $2,000,000",
+                                assets < 3e7 ~ "< $3,000,000",
+                                assets < 4e7 ~ "< $4,000,000",
+                                assets < 5e7 ~ "< $5,000,000",
+                                assets > 5e7 ~ "> $5,000,000")) %>% 
+  filter(month_alt > "2006-12-31")
+```
+
+```{r global_options, include=FALSE}
+opts_chunk$set(cache = FALSE, echo = FALSE, warning = FALSE,
+               message = FALSE, out.height = "100%", out.width = "100%")
+```
+
+
+```{r dot-map-07}
+huh_label <- huh %>%
+  group_by(month_alt) %>%
+  tally() %>% 
+  mutate(long = -110, lat = 27)
+
+ggplot(filter(huh, month_alt == "2007-10-31"), aes(long, lat)) +
+  geom_polygon(data = states, aes(group = group),
+               colour = "grey80", fill = "khaki") +
+  geom_point(aes(size = liabilities)) +
+  scale_size_area("Liabilities", limits = c(0, 5e6),
+                  labels = dollar, breaks = c(0, 5e5, 1e6, 3e6, 5e6),
+                  max_size = 2, oob = squish) +
+  geom_text(data = filter(huh_label, month_alt == "2007-10-31"),
+            aes(label = paste0("Cases Open:\n", prettyNum(n, ",")))) +
+  coord_map("lambert", 30, 45) +
+  labs(title = "Month Ending: 2007-09-30", x = "", y = "") +
+  theme_map()
+ggsave(filename = paste0(figures, "/bankruptcy_2007.png"),
+       width = 10, height = 7)
+```
+
+```{r dot-map-17}
+
+ggplot(filter(huh, month_alt == "2017-09-30"), aes(long, lat)) +
+  geom_polygon(data = states, aes(group = group),
+               colour = "grey80", fill = "khaki") +
+  geom_point(aes(size = liabilities)) +
+  scale_size_area("Liabilities", limits = c(0, 5e6),
+                  labels = dollar, breaks = c(0, 5e5, 1e6, 3e6, 5e6),
+                  max_size = 2, oob = squish) +
+  geom_text(data = filter(huh_label, month_alt == "2017-09-30"),
+            aes(label = paste0("Cases Open:\n", prettyNum(n, ",")))) +
+  coord_map("lambert", 30, 45) +
+  labs(title = "Month Ending: 2017-09-30", x = "", y = "") +
+  theme_map()
+ggsave(filename = paste0(figures, "/bankruptcy_2017.png"),
+       width = 10, height = 7)
+```
+
+```{r dot-map-18}
+
+ggplot(filter(huh, month_alt == "2018-09-30"), aes(long, lat)) +
+  geom_polygon(data = states, aes(group = group),
+               colour = "grey80", fill = "khaki") +
+  geom_point(aes(size = liabilities)) +
+  scale_size_area("Liabilities", limits = c(0, 5e6),
+                  labels = dollar, breaks = c(0, 5e5, 1e6, 3e6, 5e6),
+                  max_size = 2, oob = squish) +
+  geom_text(data = filter(huh_label, month_alt == "2018-09-30"),
+            aes(label = paste0("Cases Open:\n", prettyNum(n, ",")))) +
+  coord_map("lambert", 30, 45) +
+  labs(title = "Month Ending: 2018-09-30", x = "", y = "") +
+  theme_map()
+ggsave(filename = paste0(figures, "/bankruptcy_2018.png"),
+       width = 10, height = 7)
+```
+
+```{r dot-map-19}
+
+ggplot(filter(huh, month_alt == "2019-09-30"), aes(long, lat)) +
+  geom_polygon(data = states, aes(group = group),
+               colour = "grey80", fill = "khaki") +
+  geom_point(aes(size = liabilities)) +
+  scale_size_area("Liabilities", limits = c(0, 5e6),
+                  labels = dollar, breaks = c(0, 5e5, 1e6, 3e6, 5e6),
+                  max_size = 2, oob = squish) +
+  geom_text(data = filter(huh_label, month_alt == "2019-09-30"),
+            aes(label = paste0("Cases Open:\n", prettyNum(n, ",")))) +
+  coord_map("lambert", 30, 45) +
+  labs(title = "Month Ending: 2019-09-30", x = "", y = "") +
+  theme_map()
+ggsave(filename = paste0(figures, "/bankruptcy_2019.png"),
+       width = 10, height = 7)
+```
+
+```{r dot-map-20}
+
+ggplot(filter(huh, month_alt == "2020-09-30"), aes(long, lat)) +
+  geom_polygon(data = states, aes(group = group),
+               colour = "grey80", fill = "khaki") +
+  geom_point(aes(size = liabilities)) +
+  scale_size_area("Liabilities", limits = c(0, 5e6),
+                  labels = dollar, breaks = c(0, 5e5, 1e6, 3e6, 5e6),
+                  max_size = 2, oob = squish) +
+  geom_text(data = filter(huh_label, month_alt == "2020-09-30"),
+            aes(label = paste0("Cases Open:\n", prettyNum(n, ",")))) +
+  coord_map("lambert", 30, 45) +
+  labs(title = "Month Ending: 2020-09-30", x = "", y = "") +
+  theme_map()
+ggsave(filename = paste0(figures, "/bankruptcy_2020.png"),
+       width = 10, height = 7)
+```
+
+```{r dot-animation}
+
+ggplot(huh, aes(long, lat)) +
+  geom_polygon(data = states, aes(group = group),
+               colour = "grey80", fill = "khaki") +
+  geom_point(aes(size = liabilities)) +
+  scale_size_area("Liabilities", limits = c(0, 5e6),
+                  labels = dollar, breaks = c(0, 5e5, 1e6, 3e6, 5e6),
+                  max_size = 2, oob = squish) +
+  geom_text(data = huh_label, aes(label = paste0("Cases Open:\n",
+                                                 prettyNum(n, ",")))) +
+  coord_map("lambert", 30, 45) +
+  transition_manual(month_alt) +
+  labs(title = "Month Ending: {current_frame}", x = "", y = "") +
+  theme_map()
+
+banks_plot_loc <- ggplot(huh, aes(long, lat)) +
+  geom_polygon(data = states, aes(group = group),
+               colour = "grey80", fill = "khaki") +
+  geom_point(aes(size = liabilities)) +
+  scale_size_area("Liabilities", limits = c(0, 5e6),
+                  labels = dollar, breaks = c(0, 5e5, 1e6, 3e6, 5e6),
+                  max_size = 2, oob = squish) +
+  geom_text(data = huh_label, aes(label = paste0("Cases Open:\n",
+                                                 prettyNum(n, ",")))) +
+  coord_map("lambert", 30, 45) +
+  transition_manual(month_alt) +
+  labs(title = "Month Ending: {current_frame}", x = "", y = "") +
+  theme_map()
+# animate(banks_plot_loc, fps = 4, nframes = 120,
+#         width = 1024, height = 768,
+#         renderer = gifski_renderer(loop = F))
+# anim_save(paste0("5-results/survival/5-nc1177-trends-2018_files/",
+#                  "figure-revealjs/dot-animation-1.gif"))
+animate(banks_plot_loc, fps = 4, nframes = 120, width = 7*150, height = 5*150,
+        res = 150)
+anim_save(paste0(figures, "/dot-animation.gif"))
+```
