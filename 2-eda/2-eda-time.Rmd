@@ -13,6 +13,11 @@ library("lubridate")
 library("scales")
 library("tidyverse")
 
+local_dir   <- "../2-eda"
+figures     <- paste0(local_dir, "/figures")
+if (!file.exists(local_dir)) dir.create(local_dir)
+if (!file.exists(figures)) dir.create(figures)
+
 # Read in farms, use current year for future...
 farms <- read_csv("../0-data/nass/operations.csv") %>% 
   bind_rows(data.frame(YEAR = max(.$YEAR) + 1)) %>% 
@@ -68,6 +73,30 @@ opts_chunk$set(cache = FALSE, echo = FALSE, warning = FALSE,
 ```
 
 # General Figures of Interest
+
+## Caseload Statistics Since 2008
+
+```{r caseloads}
+cases <- read_rds("../1-tidy/bankruptcy/ch12_bankruptcy.rds")
+
+date_seq <- seq(as.Date("2007-10-01"), as.Date("2019-09-30") - 1,
+                by = "1 week")
+caseload2 <- map(date_seq, function(x) {
+  summarise(cases, caseload = sum(start < x & close > x),
+            casedate = as.Date(x))
+}) %>% bind_rows()
+
+caseload2 %>% 
+  ggplot(aes(casedate, caseload)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_x_date(limits = as.Date(c("2005-01-01", NA))) +
+  labs(x = "", y = "",
+       title = "Weekly Caseload of Chapter 12",
+       subtitle = "since 2007-10-01") +
+  theme_minimal()
+ggsave(paste0(figures, "/caseload_weekly.png"), width = 13.3, height = 10)
+```
 
 ## Chapter 12 Filings since passage in 1986
 
@@ -285,7 +314,6 @@ qtrly_data %>%
   expand_limits(y = 0) +
   theme_minimal()
 ```
-
 
 
 

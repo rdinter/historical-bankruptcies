@@ -1,5 +1,9 @@
 # General Figures of Interest
 
+## Caseload Statistics Since 2008
+
+<img src="2-eda-time_files/figure-gfm/caseloads-1.png" width="100%" height="100%" />
+
 ## Chapter 12 Filings since passage in 1986
 
 <img src="2-eda-time_files/figure-gfm/national-annual-1.png" width="100%" height="100%" /><img src="2-eda-time_files/figure-gfm/national-annual-2.png" width="100%" height="100%" />
