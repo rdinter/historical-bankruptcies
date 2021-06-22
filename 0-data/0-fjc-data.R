@@ -30,6 +30,9 @@ link_files <- paste0(data_source, "/", basename(links))
 
 # Certificate error correction:
 set_config(config(ssl_verifypeer = 0L))
+# For Ubuntu:
+# sudo apt-get update && apt-get install ca-certificates
+# sudo update-ca-certificates
 
 map2(link_files, links, function(x, y){
   if (!file.exists(x)) {
@@ -37,6 +40,9 @@ map2(link_files, links, function(x, y){
     
     # In case the file doesn't exist:
     if (temp$status_code > 400) return()
+    
+    # Wait so the server isn't overloaded
+    Sys.sleep(runif(1, 2, 5))
     
     GET(y, write_disk(x, overwrite = TRUE))
   }

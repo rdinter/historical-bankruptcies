@@ -23,16 +23,20 @@ f5a_files <- dir(data_source, full.names = T, pattern = ".xls", recursive = T)
 f5a_files <- f5a_files[!grepl("1998", f5a_files)]
 # f5a_files <- f5a_files[tools::file_ext(f5a_files) != "xlsx"]
 
-f5a_qtrly <- read_rds("0-data/fjc/IDB/f5a_quarterly.rds") %>%
-  ungroup() %>% 
+
+# Need to have previously ran the IDB files 0-fjc-data.R and 0-fjc-f5a.R
+f5a_qtrly <- read_csv("0-data/fjc/IDB/f5a_quarterly.csv") %>%
+  # read_rds("0-data/fjc/IDB/f5a_quarterly.rds") %>%
+  # ungroup() %>% 
   rename_all(function(x) paste0(x, "_qtr")) %>%
   rename(DATE = QTR_ENDED_qtr, FIPS = D1CNTY_qtr,
          DISTRICT_NS = DISTRICT_NS_qtr) %>%
   group_by(DISTRICT_NS) %>%
   complete(FIPS, DATE) %>%
-  replace(is.na(.), 0) %>%
+  mutate_if(is.numeric, ~ifelse(is.na(.), 0, .)) %>% 
+  # replace(is.na(.), 0) #%>%
   mutate(DATE = as.Date(DATE),
-         FIPS = parse_number(FIPS))
+        FIPS = parse_number(FIPS))
 
 f5a_year <- f5a_qtrly %>%
   group_by(DISTRICT_NS, FIPS) %>%

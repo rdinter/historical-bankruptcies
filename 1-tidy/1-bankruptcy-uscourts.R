@@ -101,7 +101,8 @@ county <- read_rds("0-data/uscourts/f5a/f5a.rds") %>%
   summarise_at(vars(TOTAL_FILINGS:NBCHAP_13), ~sum(., na.rm = T)) %>% 
   ungroup()
 
-goss   <- read_rds("0-data/uscourts/archived/f5a/f5a_goss.rds") %>% 
+goss   <- read_csv("0-data/uscourts/archived/f5a/f5a_goss.csv") %>% 
+  #read_rds("0-data/uscourts/archived/f5a/f5a_goss.rds") %>% 
   mutate(DATE = as.Date(paste0(YEAR, "-12-31"))) %>% 
   select(-YEAR, -NAME)
 
