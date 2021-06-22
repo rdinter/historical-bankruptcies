@@ -29,9 +29,10 @@ fjc_files <- fjc_files[!grepl("on_0", fjc_files)]
 # j5_vroom <- vroom::vroom("0-data/fjc/IDB/raw/cpbank08on_0.zip",
 #                          delim = "\t",
 #                          col_types = cols(.default = "c"))
-# j5_fread <- data.table::fread("unzip -p 0-data/fjc/IDB/raw/cpbank08on_0.zip")
 
-j5 <- map(fjc_files, read_sas)
+j5_fread <- data.table::fread("unzip -p 0-data/fjc/IDB/raw/cpbank08on_0.zip")
+
+# j5 <- map(fjc_files, read_sas)
 
 # Convert these vars:
 # ORGFLCHP CRNTCHP CLCHPT
@@ -138,9 +139,11 @@ pre_bapcpa_fdsp <- function(x, y) {
             T ~ "")
 }
 
-bus <- j5 %>% 
-  map(function(x) filter(x, NTRDBT == "b")) %>% 
-  bind_rows() %>% 
+bus <- # j5 %>% 
+  # map(function(x) filter(x, NTRDBT == "b")) %>% 
+  # bind_rows() %>% 
+  j5_fread %>% 
+  filter(NTRDBT == "b") %>% 
   # CASEKEY changed in 2019 to not include the BK component
   mutate(CASEKEY = str_remove(CASEKEY, "BK"),
          org_chap  = if_else(FILEDATE < "2005-10-16",
@@ -165,23 +168,35 @@ bus <- left_join(bus, districts)
 write_csv(bus, paste0(local_dir, "/raw_business_new.csv"))
 write_rds(bus, paste0(local_dir, "/raw_business_new.rds"))
 
-banks <- j5 %>% 
-  map(function(x) {
-    x %>% 
-      # CASEKEY changed in 2019 to not include the BK component
-      mutate(CASEKEY = str_remove(CASEKEY, "BK"),
-             org_chap  = if_else(FILEDATE < "2005-10-16",
-                                 pre_bapcpa_chp(ORGFLCHP),
-                                 chp(ORGFLCHP)),
-             crnt_chap = if_else(FILEDATE < "2005-10-16",
-                                 pre_bapcpa_chp(CRNTCHP),
-                                 chp(CRNTCHP)),
-             cl_chap   = if_else(FILEDATE < "2005-10-16",
-                                 pre_bapcpa_chp(CLCHPT),
-                                 chp(CLCHPT))) %>% 
-      filter(org_chap == "12" | crnt_chap == "12" | cl_chap == "12")
-  }) %>% 
-  bind_rows() %>% 
+banks <- # j5 %>% 
+  # map(function(x) {
+  #   x %>% 
+  #     # CASEKEY changed in 2019 to not include the BK component
+  #     mutate(CASEKEY = str_remove(CASEKEY, "BK"),
+  #            org_chap  = if_else(FILEDATE < "2005-10-16",
+  #                                pre_bapcpa_chp(ORGFLCHP),
+  #                                chp(ORGFLCHP)),
+  #            crnt_chap = if_else(FILEDATE < "2005-10-16",
+  #                                pre_bapcpa_chp(CRNTCHP),
+  #                                chp(CRNTCHP)),
+  #            cl_chap   = if_else(FILEDATE < "2005-10-16",
+  #                                pre_bapcpa_chp(CLCHPT),
+  #                                chp(CLCHPT))) %>% 
+  #     filter(org_chap == "12" | crnt_chap == "12" | cl_chap == "12")
+  # }) %>% 
+  # bind_rows() %>% 
+  j5_fread %>% 
+  mutate(CASEKEY = str_remove(CASEKEY, "BK"),
+         org_chap  = if_else(FILEDATE < "2005-10-16",
+                             pre_bapcpa_chp(ORGFLCHP),
+                             chp(ORGFLCHP)),
+         crnt_chap = if_else(FILEDATE < "2005-10-16",
+                             pre_bapcpa_chp(CRNTCHP),
+                             chp(CRNTCHP)),
+         cl_chap   = if_else(FILEDATE < "2005-10-16",
+                             pre_bapcpa_chp(CLCHPT),
+                             chp(CLCHPT))) %>% 
+  filter(org_chap == "12" | crnt_chap == "12" | cl_chap == "12") %>% 
   # mutate(DISTRICT = if_else(is.na(DISTRICT), District, DISTRICT)) %>% 
   # select(-District) %>% 
   mutate(result  = fdsp(D1FDSP, CLOSEDT),
