@@ -194,9 +194,13 @@ library("lubridate")
 arkansas_hack <- data.frame(STATE = "ARKANSAS", DISTRICT = "ARKANSAS",
                             DISTRICT_NS = "AR", CIRCUIT = "EIGHTH CIRCUIT",
                             CIRCUIT_NUM = "8TH")
+# Guam hack
+guam_hack <- data.frame(STATE = "GUAM", DISTRICT = "GUAM",
+                        DISTRICT_NS = "GU", CIRCUIT = "NINTH CIRCUIT",
+                        CIRCUIT_NUM = "9TH")
 
 f2_three_final <- read_csv("0-data/uscourts/district_ns.csv") %>% 
-  bind_rows(arkansas_hack) %>% 
+  bind_rows(arkansas_hack, guam_hack) %>% 
   right_join(f2_three) %>% 
   mutate(YEAR = year(DATE),
          QTR_ENDED = format(DATE, "%m/%d/%y"),
@@ -208,7 +212,8 @@ f2_three_final <- read_csv("0-data/uscourts/district_ns.csv") %>%
                              STATE == "NORTHERN MARIANA ISLANDS" ~ "NMI",
                              STATE == "GUAM" ~ "GU",
                              TRUE ~ ST_ABRV)) %>% 
-  select(STATE:DATE, TOTAL_FILINGS, CHAP_7, CHAP_11, CHAP_12, everything())
+  select(STATE:DATE, TOTAL_FILINGS, CHAP_7, CHAP_11, CHAP_12, everything()) %>% 
+  arrange(DATE, CIRCUIT, STATE, DISTRICT_NS)
 
 write_csv(f2_three_final, paste0(local_dir, "/f2_three.csv"))
 write_rds(f2_three_final, paste0(local_dir, "/f2_three.rds"))

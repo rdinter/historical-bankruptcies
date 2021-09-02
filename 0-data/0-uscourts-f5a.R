@@ -222,9 +222,13 @@ f5a <- bind_rows(xls_f5a) %>%
 arkansas_hack <- data.frame(STATE = "ARKANSAS", DISTRICT = "ARKANSAS",
                             DISTRICT_NS = "AR", CIRCUIT = "EIGHTH CIRCUIT",
                             CIRCUIT_NUM = "8TH")
+# Guam hack
+guam_hack <- data.frame(STATE = "GUAM", DISTRICT = "GUAM",
+                        DISTRICT_NS = "GU", CIRCUIT = "NINTH CIRCUIT",
+                        CIRCUIT_NUM = "9TH")
 
 f5a <- read_csv("0-data/uscourts/district_ns.csv") %>% 
-  bind_rows(arkansas_hack) %>% 
+  bind_rows(arkansas_hack, guam_hack) %>% 
   right_join(f5a) %>% 
   mutate(DATE = as.Date(DATE, "%Y/%m/%d"),
          QTR_ENDED = format(DATE, "%m/%d/%y"),

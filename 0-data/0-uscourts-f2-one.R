@@ -229,9 +229,13 @@ f2_one <- f2_one %>%
 arkansas_hack <- data.frame(STATE = "ARKANSAS", DISTRICT = "ARKANSAS",
                             DISTRICT_NS = "AR", CIRCUIT = "EIGHTH CIRCUIT",
                             CIRCUIT_NUM = "8TH")
+# Guam hack
+guam_hack <- data.frame(STATE = "GUAM", DISTRICT = "GUAM",
+                        DISTRICT_NS = "GU", CIRCUIT = "NINTH CIRCUIT",
+                        CIRCUIT_NUM = "9TH")
 
 f2_one <- read_csv("0-data/uscourts/district_ns.csv") %>% 
-  bind_rows(arkansas_hack) %>% 
+  bind_rows(arkansas_hack, guam_hack) %>% 
   right_join(f2_one) %>% 
   mutate(QTR_ENDED = quarter(DATE, with_year = T),
          YEAR = year(DATE),
