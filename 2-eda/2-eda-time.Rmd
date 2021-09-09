@@ -27,9 +27,9 @@ hist_data  <- read_csv("../0-data/uscourts/historical_ers_bankruptcies.csv") %>%
   rename_all(toupper) %>% 
   left_join(farms)
 
-month_data <- read_rds("../0-data/uscourts/f2_one/f2_one.rds") %>% 
+month_data <- read_csv("../0-data/uscourts/f2_one/f2_one.csv") %>% 
   left_join(farms)
-qtrly_data <- read_rds("../0-data/uscourts/f2_three/f2_three.rds") %>% 
+qtrly_data <- read_csv("../0-data/uscourts/f2_three/f2_three.csv") %>% 
   mutate(quarter = quarter(DATE)) %>% 
   left_join(farms)
 
@@ -48,15 +48,15 @@ fipssues <- c("29510" = 29189, "51510" = 51059, "51515" = 51019,
               "29193" = 29195, "30113" = 30111, "46113" = 46111)
 
 
-j5 <- read_rds("../0-data/uscourts/f5a/f5a.rds") %>% 
+j5 <- read_csv("../0-data/uscourts/f5a/f5a.csv") %>% 
   mutate(FIPS = ifelse(is.na(fipssues[as.character(FIPS)]),
                        FIPS, fipssues[as.character(FIPS)])) 
-j6 <- read_rds("../0-data/uscourts/archived/f5a/f5a_goss.rds") %>% 
+j6 <- read_csv("../0-data/uscourts/archived/f5a/f5a_goss.csv") %>% 
   mutate(DATE = as.Date(paste0(YEAR, "-12-31")),
          FIPS = ifelse(is.na(fipssues[as.character(FIPS)]),
                        FIPS, fipssues[as.character(FIPS)]))
 
-fed_cross <- read_csv("../junk/fed_district_cross.csv") %>% 
+fed_cross <- read_csv("../0-data/fed/fed_district_cross.csv") %>% 
   select(fips, district) %>% 
   mutate(FIPS = as.numeric(fips))
 
@@ -77,7 +77,7 @@ opts_chunk$set(cache = FALSE, echo = FALSE, warning = FALSE,
 ## Caseload Statistics Since 2008
 
 ```{r caseloads}
-cases <- read_rds("../1-tidy/bankruptcy/ch12_bankruptcy.rds")
+cases <- read_csv("../1-tidy/bankruptcy/ch12_bankruptcy.csv")
 
 date_seq <- seq(as.Date("2007-10-01"), as.Date("2019-09-30") - 1,
                 by = "1 week")
