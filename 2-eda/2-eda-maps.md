@@ -1,5 +1,4 @@
-Most recent data
-================
+# Most recent data
 
 <img src="2-eda-maps_files/figure-markdown_github/recent-1.png" width="100%" height="100%" />
 
@@ -26,8 +25,7 @@ Raw data of bankruptcy filings since BAPCPA was enacted:
 
 <img src="2-eda-maps_files/figure-markdown_github/bapcpa-count-1.png" width="100%" height="100%" />
 
-Historical
-==========
+# Historical
 
 Since chapter 12 was an available bankruptcy option for farmers in
 October of 1986:
@@ -42,8 +40,4 @@ Historical rates of bankruptcy, animated (note, Arkansas changed its
 reporting structure in 2018 going from reporting its districts
 separately to combined reporting):
 
-<img src="2-eda-maps_files/figure-markdown_github/animate-albers-1.gif" width="100%" height="100%" />
-
 Animated, but with red scale:
-
-<img src="2-eda-maps_files/figure-markdown_github/animate-albers-red-1.gif" width="100%" height="100%" />
