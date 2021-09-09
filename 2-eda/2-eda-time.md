@@ -25,17 +25,11 @@
 <img src="2-eda-time_files/figure-gfm/fed-district-1.png" width="100%" height="100%" />
 
 <!-- ## Combined Series -->
-
 <!-- ```{r national-annual-quarterly} -->
-
 <!-- annual_qtr <- quarter_nat %>%  -->
-
 <!--   left_join(annual_nat) %>%  -->
-
 <!--   mutate(year = year(DATE)) %>%  -->
-
 <!--   fill(CHAP_12_nat, .direction = "up") -->
-
 <!-- ``` -->
 
 ## General Bankruptcy Trends
