@@ -18,13 +18,16 @@
 library("lubridate")
 library("stringr")
 library("tidyverse")
+library("zipcodeR")
 
-zipcode <- read_rds("0-data/zipcodes/zip_codes.rds") %>% 
-  select(zip, latitude, longitude) %>% 
+# zipcode <- read_rds("0-data/zipcodes/zip_codes.rds") %>% 
+#   select(zip, latitude, longitude) %>% 
+#   mutate(zip = as.character(zip))
+
+zipcode <- zipcodeR::zip_code_db %>% 
+  select(zip = zipcode, latitude = lat, longitude = lng) %>% 
   mutate(zip = as.character(zip))
 
-# library("zipcode")
-# data(zipcode)
 
 meann <- function(x) mean(x, na.rm = T)
 sumn  <- function(x) sum(x, na.rm = T)
@@ -80,6 +83,10 @@ farm <- read_rds("0-data/fjc/IDB/raw_ch12s_new.rds") %>%
 end_fy_date <- as.Date(paste0(max(farm$CLOSECY, na.rm = T), "-09-30"))
 
 j5 <- farm %>% 
+  # Dates
+  mutate_at(vars(ORGFLDT, FILEDATE, CLOSEDT,
+                 D1CHGDT, D2CHGDT, D1FDSPDT, D2FDSPDT),
+            ~as.Date(., format = "%m/%d/%Y")) %>% 
   mutate(start = if_else(is.na(ORGFLDT), FILEDATE, ORGFLDT),
          close = if_else(is.na(CLOSEDT), end_fy_date, CLOSEDT),
          start_year = year(start)) %>% 
@@ -122,26 +129,27 @@ j5 <- farm %>%
   ungroup()
 
 county <- read_delim("0-data/shapefiles/raw/2015_Gaz_counties_national.zip",
-                     "\t", escape_double = FALSE, trim_ws = TRUE)
+                     "\t", escape_double = FALSE, trim_ws = TRUE) %>% 
+  type_convert()
 
-j5 <- j5 %>% 
-  mutate(zip = str_sub(D1ZIP, 1, 5)) %>% 
+j6 <- j5 %>% 
+  type_convert() %>% 
+  mutate(zip = str_sub(D1ZIP, 1, 5),
+         D1CNTY = as.character(D1CNTY)) %>% 
   left_join(zipcode)
 
-j5 <- county %>% 
+j7 <- county %>% 
   select(D1CNTY = GEOID, INTPTLAT, INTPTLONG) %>% 
-  right_join(j5)
-
-j5 <- j5 %>% 
+  right_join(j6) %>% 
   mutate(lat = if_else(is.na(latitude), INTPTLAT, latitude),
          long = if_else(is.na(longitude), INTPTLONG, longitude))
 
-write_csv(j5, paste0(local_dir, "/ch12_bankruptcy.csv"))
-write_rds(j5, paste0(local_dir, "/ch12_bankruptcy.rds"))
+write_csv(j7, paste0(local_dir, "/ch12_bankruptcy.csv"))
+write_rds(j7, paste0(local_dir, "/ch12_bankruptcy.rds"))
 
-j5 <- filter(j5, start > "2007-09-30")
+j8 <- filter(j7, start > "2007-09-30")
 
-write_csv(j5, paste0(local_dir, "/ch12_bankruptcy_f2008.csv"))
+write_csv(j8, paste0(local_dir, "/ch12_bankruptcy_f2008.csv"))
 
 # ---- business -----------------------------------------------------------
 
@@ -192,6 +200,10 @@ mutate(ch13_unsec_limit = case_when(FILEDATE < "1994-04-01" ~ 100000,
 end_fy_date <- as.Date(paste0(max(farm$CLOSECY, na.rm = T), "-09-30"))
 
 j5 <- bus %>%
+  # Dates
+  mutate_at(vars(ORGFLDT, FILEDATE, CLOSEDT,
+                 D1CHGDT, D2CHGDT, D1FDSPDT, D2FDSPDT),
+            ~as.Date(., format = "%m/%d/%Y")) %>% 
   mutate(start = if_else(is.na(ORGFLDT), FILEDATE, ORGFLDT),
          close = if_else(is.na(CLOSEDT), end_fy_date, CLOSEDT),
          start_year = year(start)) %>%

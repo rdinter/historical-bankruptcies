@@ -21,7 +21,7 @@ districts <- read_csv("0-data/fjc/district_cross.csv") %>%
   rename_all(toupper)
 
 fjc_files <- dir(data_source, full.names = T)
-fjc_files <- fjc_files[!grepl("on_0", fjc_files)]
+fjc_files <- fjc_files[!grepl("(on_0)|(to)", fjc_files)]
 
 # All as a tsv -- runs into memory issues due to >= 4GB file
 # j5_tsv <- read_tsv("0-data/fjc/IDB/raw/cpbank08on_0.zip",
