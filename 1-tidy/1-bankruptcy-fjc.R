@@ -91,42 +91,33 @@ j5 <- farm %>%
          close = if_else(is.na(CLOSEDT), end_fy_date, CLOSEDT),
          start_year = year(start)) %>% 
   group_by(CASEKEY) %>% 
-  arrange(SNAPSHOT) %>% 
-  slice(n()) %>% 
-  # group_by(CASEKEY, start_year, FILEFY, D1CNTY, D1ZIP, DISTRICT_NS, NOB,
-  #          debt_limit, result, PRFILE, D1FPRSE, JOINT, D2FPRSE,
-  #          ECRDTRS, DBTRTYP, org_chap, crnt_chap, cl_chap, SEQ) %>% 
-  summarise(start_year = first_non(start_year), FILEFY = first_non(FILEFY),
-            D1CNTY = first_non(D1CNTY), D1ZIP = first_non(D1ZIP),
-            DISTRICT_NS = first_non(DISTRICT_NS), NOB = first_non(NOB),
-            debt_limit = first_non(debt_limit), result = first_non(result),
-            PRFILE = first_non(PRFILE), D1FPRSE = first_non(D1FPRSE),
-            JOINT = first_non(JOINT), D2FPRSE = first_non(D2FPRSE),
-            ECRDTRS = first_non(ECRDTRS), DBTRTYP = first_non(DBTRTYP),
-            CASETYP = first_non(CASETYP),
-            org_chap = first_non(org_chap), crnt_chap = first_non(crnt_chap),
-            cl_chap = first_non(cl_chap), SEQ = first_non(SEQ),
-            duration = max(close) - max(start),
-            duration_day = difftime(max(close), max(start), units = "days"),
-            duration_weeks = difftime(max(close), max(start), units = "weeks"),
-            duration_months = mondf(max(close), max(start)),
-            start = min(start),
-            close = max(close),
-            closed = sum(!is.na(CLOSEDT)) > 0,
-            assets = Mode(TOTASSTS),
-            real_property = Mode(REALPROP),
-            personal_property = Mode(PERSPROP),
-            liabilities = Mode(TOTLBLTS),
-            secured = Mode(SECURED),
-            unsecured1 = Mode(UNSECPR),
-            unsecured2 = Mode(UNSECNPR),
-            debts = Mode(TOTDBT),
-            discharged = Mode(DSCHRGD),
-            not_discharged = Mode(NDSCHRGD),
-            income_average = Mode(AVGMNTHI),
-            income_current = Mode(CNTMNTHI),
-            expenses_average = Mode(AVGMNTHE)) %>% 
-  ungroup()
+  filter(SNAPSHOT == max(SNAPSHOT)) %>% 
+  ungroup() %>% 
+  mutate(duration = close - start,
+         duration_day = difftime(close, start, units = "days"),
+         duration_weeks = difftime(close, start, units = "weeks"),
+         duration_months = mondf(close, start),
+         closed = sum(!is.na(CLOSEDT)) > 0) %>% 
+  select(CASEKEY, start_year, FILEFY, D1CNTY, D1ZIP, DISTRICT_NS, NOB,
+         debt_limit, result, PRFILE, D1FPRSE, JOINT, D2FPRSE, ECRDTRS,
+         DBTRTYP, CASETYP, org_chap, crnt_chap, cl_chap, SEQ,
+         duration, duration_day, duration_weeks, duration_months,
+         start, close,
+         closed,
+         assets = TOTASSTS,
+         real_property = REALPROP,
+         personal_property = PERSPROP,
+         liabilities = TOTLBLTS,
+         secured = SECURED,
+         unsecured1 = UNSECPR,
+         unsecured2 = UNSECNPR,
+         debts = TOTDBT,
+         discharged = DSCHRGD,
+         not_discharged = NDSCHRGD,
+         income_average = AVGMNTHI,
+         income_current = CNTMNTHI,
+         expenses_average = AVGMNTHE)
+
 
 county <- read_delim("0-data/shapefiles/raw/2015_Gaz_counties_national.zip",
                      "\t", escape_double = FALSE, trim_ws = TRUE) %>% 
@@ -208,45 +199,33 @@ j5 <- bus %>%
          close = if_else(is.na(CLOSEDT), end_fy_date, CLOSEDT),
          start_year = year(start)) %>%
   group_by(CASEKEY) %>%
-  arrange(SNAPSHOT) %>%
-  slice(n()) %>%
-  # group_by(CASEKEY, start_year, FILEFY, D1CNTY, DISTRICT_NS, NOB,
-  #          ch13_unsec_limit, ch13_sec_limit, debt_limit, result,
-  #          PRFILE, D1FPRSE, JOINT, D2FPRSE, ECRDTRS, DBTRTYP,
-  #          org_chap, crnt_chap, cl_chap, SEQ) %>%
-  summarise(start_year = first_non(start_year),
-            FILEFY = first_non(FILEFY), D1CNTY = first_non(D1CNTY),
-            DISTRICT_NS = first_non(DISTRICT_NS), NOB = first_non(NOB),
-            ch13_unsec_limit = first_non(ch13_unsec_limit),
-            ch13_sec_limit = first_non(ch13_sec_limit),
-            debt_limit = first_non(debt_limit), result = first_non(result),
-            PRFILE = first_non(PRFILE), D1FPRSE = first_non(D1FPRSE),
-            JOINT = first_non(JOINT), D2FPRSE = first_non(D2FPRSE),
-            ECRDTRS = first_non(ECRDTRS), DBTRTYP = first_non(DBTRTYP),
-            CASETYP = first_non(CASETYP),
-            org_chap = first_non(org_chap), crnt_chap = first_non(crnt_chap),
-            cl_chap = first_non(cl_chap), SEQ = first_non(SEQ),
-            duration = max(close) - max(start),
-            duration_day = difftime(max(close), max(start), units = "days"),
-            duration_weeks = difftime(max(close), max(start), units = "weeks"),
-            duration_months = mondf(max(close), max(start)),
-            start = min(start),
-            close = max(close),
-            closed = sum(!is.na(CLOSEDT)) > 0,
-            assets = Mode(TOTASSTS),
-            real_property = Mode(REALPROP),
-            personal_property = Mode(PERSPROP),
-            liabilities = Mode(TOTLBLTS),
-            secured = Mode(SECURED),
-            unsecured1 = Mode(UNSECPR),
-            unsecured2 = Mode(UNSECNPR),
-            debts = Mode(TOTDBT),
-            discharged = Mode(DSCHRGD),
-            not_discharged = Mode(NDSCHRGD),
-            income_average = Mode(AVGMNTHI),
-            income_current = Mode(CNTMNTHI),
-            expenses_average = Mode(AVGMNTHE)) %>%
-  ungroup()
+  filter(SNAPSHOT == max(SNAPSHOT)) %>% 
+  ungroup() %>% 
+  mutate(duration = close - start,
+         duration_day = difftime(close, start, units = "days"),
+         duration_weeks = difftime(close, start, units = "weeks"),
+         duration_months = mondf(close, start),
+         closed = sum(!is.na(CLOSEDT)) > 0) %>% 
+  select(CASEKEY, start_year, FILEFY, D1CNTY, D1ZIP, DISTRICT_NS, NOB,
+         debt_limit, result, PRFILE, D1FPRSE, JOINT, D2FPRSE, ECRDTRS,
+         DBTRTYP, CASETYP, org_chap, crnt_chap, cl_chap, SEQ,
+         duration, duration_day, duration_weeks, duration_months,
+         start, close,
+         closed,
+         assets = TOTASSTS,
+         real_property = REALPROP,
+         personal_property = PERSPROP,
+         liabilities = TOTLBLTS,
+         secured = SECURED,
+         unsecured1 = UNSECPR,
+         unsecured2 = UNSECNPR,
+         debts = TOTDBT,
+         discharged = DSCHRGD,
+         not_discharged = NDSCHRGD,
+         income_average = AVGMNTHI,
+         income_current = CNTMNTHI,
+         expenses_average = AVGMNTHE)
+
 
 write_csv(j5, paste0(local_dir, "/business_bankruptcy.csv"))
 write_rds(j5, paste0(local_dir, "/business_bankruptcy.rds"))
