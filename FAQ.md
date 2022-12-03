@@ -1,8 +1,6 @@
-Frequently Asked Questions
-==========================
+# Frequently Asked Questions
 
-Where does the bankruptcy data come from?
------------------------------------------
+## Where does the bankruptcy data come from?
 
 [US
 Courts](https://www.uscourts.gov/statistics-reports/caseload-statistics-data-tables)
@@ -15,8 +13,7 @@ These are the two main sources along with the
 [PACER](https://www.pacer.gov/), which hosts all documents related to
 filed bankruptcies, related to bankruptcies in the United States.
 
-Are chapter 12 bankruptcy filings the best numbers to look at to evaluate farming-related bankruptcies?
--------------------------------------------------------------------------------------------------------
+## Are chapter 12 bankruptcy filings the best numbers to look at to evaluate farming-related bankruptcies?
 
 Chapter 12 bankruptcies can only be filed by farmers or fishermen. To
 qualify, they must meet the [income and debt
@@ -26,15 +23,16 @@ gross income in the previous tax year comes from farming, although this
 can also be satisfied if 2 of the previous 3 tax years meet this
 criteria. The debt requirement is that at least 50% (80% for fishermen)
 of outstanding debt is related to farming and total debts do not exceed
-the debt limit which is currently set at $4,411,400 ($2,044,225 for
-fishermen) which were [increased on April 1,
-2019](https://www.federalregister.gov/documents/2019/02/12/2019-01903/revision-of-certain-dollar-amounts-in-the-bankruptcy-code-prescribed-under-section-104a-of-the-code).
-This debt limit was further increased to $10,000,000 with the passage of
-the [Family Farmer Relief Act of
+the debt limit which is currently set at $11,097,350 ($2,268,550 for
+fishermen) which were increased on April 01, 2022 based on the triennial
+inflation adjustment. This debt limit was previously increased to
+$10,000,000 from $4,411,400 with the passage of the [Family Farmer
+Relief Act of
 2019](https://delgado.house.gov/media/press-releases/delgado-s-bipartisan-family-farmer-relief-act-signed-law)
-which was signed into law on August 26, 2019. This is a more strict
-definition of a farm than what the USDA enforces which ensures filers of
-chapter 12 would be classified as farmers or fishermen.
+which was signed into law on August 26, 2019. The requirement to have at
+least 50% of income from farmer is a more strict definition of a farm
+than what the USDA enforces which ensures all filers of chapter 12 would
+be classified as farmers by USDA standards.
 
 However, farmers and fishermen are not limited to only file for chapter
 12 bankruptcy especially those that do not satisfy the income and/or
@@ -55,9 +53,11 @@ chapter 7, 11, and 13.
 | 2016-04-01     | $4,153,150        | $1,924,550           |
 | 2019-04-01     | $4,411,400        | $2,044,225           |
 | 2019-08-23     | $10,000,000       | $2,044,225           |
+| 2022-04-01     | $11,097,350       | $2,268,550           |
 
-What are bankruptcy trends in recent years?
--------------------------------------------
+Chapter 12 Debt Limits Over Time
+
+## What are bankruptcy trends in recent years?
 
 As of recent, [bankruptcies have
 stabilized](https://aede.osu.edu/news/farm-bankruptcies-are-stabilizing).
@@ -70,25 +70,26 @@ much lower debt limits.
 
 <img src="FAQ_files/figure-markdown_github/unnamed-chunk-1-1.png" width="100%" height="100%" />
 
-|  Year|  Annual Chapter 12|
+| Year | Annual Chapter 12 |
 |-----:|------------------:|
-|  2006|                354|
-|  2007|                364|
-|  2008|                345|
-|  2009|                544|
-|  2010|                723|
-|  2011|                635|
-|  2012|                510|
-|  2013|                395|
-|  2014|                360|
-|  2015|                407|
-|  2016|                461|
-|  2017|                501|
-|  2018|                498|
-|  2019|                601|
+| 2006 |               354 |
+| 2007 |               364 |
+| 2008 |               345 |
+| 2009 |               544 |
+| 2010 |               723 |
+| 2011 |               635 |
+| 2012 |               510 |
+| 2013 |               395 |
+| 2014 |               360 |
+| 2015 |               407 |
+| 2016 |               461 |
+| 2017 |               501 |
+| 2018 |               498 |
+| 2019 |               599 |
+| 2020 |               555 |
+| 2021 |               276 |
 
-How do farmer bankruptcies compare to the 1980s when the farm crisis was in effect?
------------------------------------------------------------------------------------
+## How do farmer bankruptcies compare to the 1980s when the farm crisis was in effect?
 
 Chapter 12 filings in the 1980s are not directly comparable to those in
 recent years for several reasons. For one, it is easier to file for
