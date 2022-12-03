@@ -9,16 +9,17 @@ output:
 
 ```{r start, include = FALSE}
 #devtools::install_github("rdinter/albersusa")
-library("albersusa")
-library("gganimate")
-library("knitr")
-library("lubridate")
-library("maptools")
-library("scales")
-library("sp")
-library("spdplyr")
-library("tidyverse")
-library("zoo")
+library(albersusa)
+library(gganimate)
+library(gifski)
+library(knitr)
+library(lubridate)
+library(maptools)
+library(scales)
+library(sp)
+library(spdplyr)
+library(tidyverse)
+library(zoo)
 
 local_dir   <- "../2-eda"
 figures     <- paste0(local_dir, "/figures")
@@ -218,6 +219,6 @@ banks_plot_loc <- ggplot(huh, aes(long, lat)) +
 # anim_save(paste0("5-results/survival/5-nc1177-trends-2018_files/",
 #                  "figure-revealjs/dot-animation-1.gif"))
 animate(banks_plot_loc, fps = 4, nframes = 120, width = 7*150, height = 5*150,
-        res = 150)
+        res = 150, renderer = gifski_renderer())
 anim_save(paste0(figures, "/dot-animation.gif"))
 ```
