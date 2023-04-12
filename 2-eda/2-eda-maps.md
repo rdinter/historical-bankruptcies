@@ -40,4 +40,8 @@ Historical rates of bankruptcy, animated (note, Arkansas changed its
 reporting structure in 2018 going from reporting its districts
 separately to combined reporting):
 
+<img src="2-eda-maps_files/figure-markdown_github/animate-albers-1.gif" width="100%" height="100%" />
+
 Animated, but with red scale:
+
+<img src="2-eda-maps_files/figure-markdown_github/animate-albers-red-1.gif" width="100%" height="100%" />
