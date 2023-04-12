@@ -69,6 +69,8 @@ farm <- read_rds("0-data/fjc/IDB/raw_ch12s_new.rds") %>%
   # $4,031,575 in 2013
   # $4,153,150 in 2016
   # $4,441,400 in 2019
+  # $10,000,000 on 2019-08-23
+  # $11,097,350 on 2022-04-01
   mutate(debt_limit = case_when(FILEDATE < "2005-10-17" ~ 1500000,
                                 FILEDATE < "2007-04-01" ~ 3237000,
                                 FILEDATE < "2010-04-01" ~ 3544525,
@@ -76,7 +78,8 @@ farm <- read_rds("0-data/fjc/IDB/raw_ch12s_new.rds") %>%
                                 FILEDATE < "2016-04-01" ~ 4031575,
                                 FILEDATE < "2019-04-01" ~ 4153150,
                                 FILEDATE < "2019-08-23" ~ 4411400,
-                                FILEDATE > "2019-08-23" ~ 10000000))
+                                FILEDATE < "2022-04-01" ~ 10000000,
+                                FILEDATE > "2022-04-01" ~ 11097350))
 
 # Extract out the latest date of a close, convert it to date and use for the
 #  open cases.
@@ -166,7 +169,9 @@ mutate(ch13_unsec_limit = case_when(FILEDATE < "1994-04-01" ~ 100000,
                                     FILEDATE < "2013-04-01" ~ 360475,
                                     FILEDATE < "2016-04-01" ~ 383175,
                                     FILEDATE < "2019-04-01" ~ 394725,
-                                    FILEDATE > "2019-04-01" ~ 419275),
+                                    FILEDATE < "2022-04-01" ~ 419275,
+                                    FILEDATE < "2022-06-22" ~ 465275,
+                                    FILEDATE > "2022-06-22" ~ 2750000),
        ch13_sec_limit = case_when(FILEDATE < "1994-04-01" ~ 350000,
                                   FILEDATE < "1998-04-01" ~ 750000,
                                   FILEDATE < "2001-04-01" ~ 807000,
@@ -176,7 +181,9 @@ mutate(ch13_unsec_limit = case_when(FILEDATE < "1994-04-01" ~ 100000,
                                   FILEDATE < "2013-04-01" ~ 1081400,
                                   FILEDATE < "2016-04-01" ~ 1149525,
                                   FILEDATE < "2019-04-01" ~ 1184200,
-                                  FILEDATE > "2019-04-01" ~ 1257850),
+                                  FILEDATE < "2022-04-01" ~ 1257850,
+                                  FILEDATE < "2022-06-22" ~ 1395875,
+                                  FILEDATE > "2022-06-22" ~ 2750000),
        debt_limit = case_when(FILEDATE < "2005-10-17" ~ 1500000,
                               FILEDATE < "2007-04-01" ~ 3237000,
                               FILEDATE < "2010-04-01" ~ 3544525,
@@ -184,7 +191,8 @@ mutate(ch13_unsec_limit = case_when(FILEDATE < "1994-04-01" ~ 100000,
                               FILEDATE < "2016-04-01" ~ 4031575,
                               FILEDATE < "2019-04-01" ~ 4153150,
                               FILEDATE < "2019-08-23" ~ 4411400,
-                              FILEDATE > "2019-08-23" ~ 10000000))
+                              FILEDATE < "2022-04-01" ~ 10000000,
+                              FILEDATE > "2022-04-01" ~ 11097350))
 
 # Extract out the latest date of a close, convert it to date and use for the
 #  open cases.
