@@ -8,10 +8,10 @@ output:
 ---
 
 ```{r start, include = FALSE}
-library("knitr")
-library("lubridate")
-library("scales")
-library("tidyverse")
+library(knitr)
+library(lubridate)
+library(scales)
+library(tidyverse)
 
 local_dir   <- "../2-eda"
 figures     <- paste0(local_dir, "/figures")
@@ -19,18 +19,19 @@ if (!file.exists(local_dir)) dir.create(local_dir)
 if (!file.exists(figures)) dir.create(figures)
 
 # Read in farms, use current year for future...
-farms <- read_csv("../0-data/nass/operations.csv") %>% 
-  bind_rows(data.frame(YEAR = max(.$YEAR) + 1)) %>% 
+farms <- read_csv("../0-data/nass/operations.csv")
+
+farms <- bind_rows(farms, data.frame(YEAR = max(farms$YEAR) + 1))|> 
   fill(FARMS)
 
-hist_data  <- read_csv("../0-data/uscourts/historical_ers_bankruptcies.csv") %>% 
-  rename_all(toupper) %>% 
+hist_data  <- read_csv("../0-data/uscourts/historical_ers_bankruptcies.csv") |> 
+  rename_all(toupper) |> 
   left_join(farms)
 
-month_data <- read_csv("../0-data/uscourts/f2_one/f2_one.csv") %>% 
+month_data <- read_csv("../0-data/uscourts/f2_one/f2_one.csv") |> 
   left_join(farms)
-qtrly_data <- read_csv("../0-data/uscourts/f2_three/f2_three.csv") %>% 
-  mutate(quarter = quarter(DATE)) %>% 
+qtrly_data <- read_csv("../0-data/uscourts/f2_three/f2_three.csv") |> 
+  mutate(quarter = quarter(DATE)) |> 
   left_join(farms)
 
 
@@ -48,22 +49,22 @@ fipssues <- c("29510" = 29189, "51510" = 51059, "51515" = 51019,
               "29193" = 29195, "30113" = 30111, "46113" = 46111)
 
 
-j5 <- read_csv("../0-data/uscourts/f5a/f5a.csv") %>% 
+j5 <- read_csv("../0-data/uscourts/f5a/f5a.csv") |> 
   mutate(FIPS = ifelse(is.na(fipssues[as.character(FIPS)]),
                        FIPS, fipssues[as.character(FIPS)])) 
-j6 <- read_csv("../0-data/uscourts/archived/f5a/f5a_goss.csv") %>% 
+j6 <- read_csv("../0-data/uscourts/archived/f5a/f5a_goss.csv") |> 
   mutate(DATE = as.Date(paste0(YEAR, "-12-31")),
          FIPS = ifelse(is.na(fipssues[as.character(FIPS)]),
                        FIPS, fipssues[as.character(FIPS)]))
 
-fed_cross <- read_csv("../0-data/fed/fed_district_cross.csv") %>% 
-  select(fips, district) %>% 
+fed_cross <- read_csv("../0-data/fed/fed_district_cross.csv") |> 
+  select(fips, district) |> 
   mutate(FIPS = as.numeric(fips))
 
 
-f5a <- j5 %>% 
-  bind_rows(j6) %>% 
-  arrange(DATE, FIPS) %>% 
+f5a <- j5 |> 
+  bind_rows(j6) |> 
+  arrange(DATE, FIPS) |> 
   left_join(fed_cross)
 ```
 
@@ -84,9 +85,9 @@ date_seq <- seq(as.Date("2007-10-01"), as.Date("2019-09-30") - 1,
 caseload2 <- map(date_seq, function(x) {
   summarise(cases, caseload = sum(start < x & close > x),
             casedate = as.Date(x))
-}) %>% bind_rows()
+}) |> bind_rows()
 
-caseload2 %>% 
+caseload2 |> 
   ggplot(aes(casedate, caseload)) +
   geom_line() +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
@@ -101,9 +102,9 @@ ggsave(paste0(figures, "/caseload_weekly.png"), width = 13.3, height = 10)
 ## Chapter 12 Filings since passage in 1986
 
 ```{r national-annual}
-annual_nat <- qtrly_data %>% 
-  filter(!is.na(impute)) %>% 
-  group_by(YEAR) %>% 
+annual_nat <- qtrly_data |> 
+  filter(!is.na(impute)) |> 
+  group_by(YEAR) |> 
   summarise(CHAP_12_nat = sum(impute, na.rm = T)*(4/n_distinct(DATE)),
             farms = mean(FARMS, na.rm = T),
             DATE = as.Date(paste0(mean(YEAR), "-12-31")),
@@ -131,9 +132,9 @@ ggplot(annual_nat, aes(YEAR, rate_12)) +
 ```
 
 ```{r national-quarter}
-quarter_nat <- qtrly_data %>% 
-  filter(!is.na(impute)) %>% 
-  group_by(DATE) %>% 
+quarter_nat <- qtrly_data |> 
+  filter(!is.na(impute)) |> 
+  group_by(DATE) |> 
   summarise(CHAP_12_qtr = sum(impute, na.rm = T),
             farms = mean(FARMS, na.rm = T))
 
@@ -160,14 +161,14 @@ ggplot(quarter_nat, aes(DATE, 40000*CHAP_12_qtr / farms)) +
 ## Chapter 12 Filings since Bankruptcy Abuse Prevention and Consumer Protection Act of 2005
 
 ```{r qtrly-bapcpa}
-qtrly_data %>% 
-  filter(DATE > "2005-10-17") %>% 
-  group_by(DATE) %>% 
+qtrly_data |> 
+  filter(DATE > "2005-10-17") |> 
+  group_by(DATE) |> 
   summarise(CHAP_12 = sum(impute, na.rm = T),
-            Quarter = factor(mean(quarter), levels = c(1, 2, 3, 4))) %>% 
+            Quarter = factor(mean(quarter), levels = c(1, 2, 3, 4))) |> 
   ggplot(aes(DATE, CHAP_12)) +
   geom_line(aes(group = Quarter, color = Quarter, linetype = Quarter)) +
-  # geom_point(data = . %>% filter(qtr == 2)) +
+  # geom_point(data = . |> filter(qtr == 2)) +
   geom_point(aes(color = Quarter, shape = Quarter)) +
   theme_minimal() +
   scale_x_date(date_labels = "%Y",
@@ -182,15 +183,15 @@ qtrly_data %>%
 ```
 
 ```{r 12-month-bapcpa}
-qtrly_data %>% 
-  group_by(DATE) %>% 
+qtrly_data |> 
+  group_by(DATE) |> 
   summarise(CHAP_12 = sum(impute, na.rm = T),
-            Quarter = factor(mean(quarter), levels = c(1, 2, 3, 4))) %>% 
-  mutate(CHAP_12 = zoo::rollsumr(CHAP_12, k = 4, fill = NA)) %>% 
-  filter(DATE > "2005-10-17") %>% 
+            Quarter = factor(mean(quarter), levels = c(1, 2, 3, 4))) |> 
+  mutate(CHAP_12 = zoo::rollsumr(CHAP_12, k = 4, fill = NA)) |> 
+  filter(DATE > "2005-10-17") |> 
   ggplot(aes(DATE, CHAP_12)) +
   geom_line(aes(group = Quarter, color = Quarter, linetype = Quarter)) +
-  # geom_point(data = . %>% filter(qtr == 2)) +
+  # geom_point(data = . |> filter(qtr == 2)) +
   geom_point(aes(color = Quarter, shape = Quarter)) +
   theme_minimal() +
   scale_x_date(date_labels = "%Y",
@@ -205,8 +206,8 @@ qtrly_data %>%
 ```
 
 ```{r national-monthly}
-month_nat <- month_data %>% 
-  group_by(DATE) %>% 
+month_nat <- month_data |> 
+  group_by(DATE) |> 
   summarise(CHAP_12_mth = sum(CHAP_12, na.rm = T),
             farms = mean(FARMS, na.rm = T))
 
@@ -233,10 +234,10 @@ ggplot(month_nat, aes(DATE, 120000*CHAP_12_mth / farms)) +
 ```{r fed-district-bapcpa}
 
 # Post BAPCPA Chapter 12 by Federal Reserve Districts
-f5a %>% 
-  filter(!is.na(district), DATE > "2005-10-17") %>%
-  group_by(DATE, district) %>% 
-  summarise(chap_12 = sum(CHAP_12, na.rm = T)) %>% 
+f5a |> 
+  filter(!is.na(district), DATE > "2005-10-17") |> 
+  group_by(DATE, district) |> 
+  summarise(chap_12 = sum(CHAP_12, na.rm = T)) |> 
   ggplot(aes(DATE, chap_12)) +
   geom_line() +
   facet_wrap(~district) +
@@ -249,10 +250,10 @@ f5a %>%
 ```
 
 ```{r fed-district}
-f5a %>% 
-  filter(!is.na(district)) %>%
-  group_by(DATE, district) %>% 
-  summarise(chap_12 = sum(CHAP_12, na.rm = T)) %>% 
+f5a |> 
+  filter(!is.na(district)) |> 
+  group_by(DATE, district) |> 
+  summarise(chap_12 = sum(CHAP_12, na.rm = T)) |> 
   ggplot(aes(DATE, chap_12)) +
   geom_line() +
   facet_wrap(~district) +
@@ -268,9 +269,9 @@ f5a %>%
 <!-- ## Combined Series -->
 
 <!-- ```{r national-annual-quarterly} -->
-<!-- annual_qtr <- quarter_nat %>%  -->
-<!--   left_join(annual_nat) %>%  -->
-<!--   mutate(year = year(DATE)) %>%  -->
+<!-- annual_qtr <- quarter_nat |>  -->
+<!--   left_join(annual_nat) |>  -->
+<!--   mutate(year = year(DATE)) |>  -->
 <!--   fill(CHAP_12_nat, .direction = "up") -->
 
 <!-- ``` -->
@@ -279,12 +280,12 @@ f5a %>%
 ## General Bankruptcy Trends
 
 ```{r national-quarter-general}
-qtrly_data %>%
-  filter(DATE > "2001-01-01") %>%
-  select(DATE, BCHAP_7, BCHAP_11, CHAP_12, BCHAP_13) %>%
-  group_by(DATE) %>%
-  summarise_all(~sum(., na.rm = T)) %>%
-  gather(chap, val, -DATE) %>%
+qtrly_data |> 
+  filter(DATE > "2001-01-01") |> 
+  select(DATE, BCHAP_7, BCHAP_11, CHAP_12, BCHAP_13) |> 
+  group_by(DATE) |> 
+  summarise_all(~sum(., na.rm = T)) |> 
+  gather(chap, val, -DATE) |> 
   ggplot(aes(DATE, val, group = chap)) +
   geom_line() +
   facet_wrap(~chap, scales = "free_y") +
@@ -298,12 +299,12 @@ qtrly_data %>%
 
 
 ```{r national-quarter-all}
-qtrly_data %>%
-  filter(DATE > "2005-01-01") %>%
-  select(DATE, CHAP_7, CHAP_11, CHAP_12, CHAP_13) %>%
-  group_by(DATE) %>%
-  summarise_all(~sum(., na.rm = T)) %>%
-  gather(chap, val, -DATE) %>%
+qtrly_data |> 
+  filter(DATE > "2005-01-01") |> 
+  select(DATE, CHAP_7, CHAP_11, CHAP_12, CHAP_13) |> 
+  group_by(DATE) |> 
+  summarise_all(~sum(., na.rm = T)) |> 
+  gather(chap, val, -DATE) |> 
   ggplot(aes(DATE, val, group = chap)) +
   geom_line() +
   facet_wrap(~chap, scales = "free_y") +
