@@ -1,9 +1,12 @@
 # Downloading files from uscourts.gov on bankruptcy, the tables we want are:
 #  f2, f2_judicial, f2_one, f2_three, and f5a
 
-library("httr")
-library("rvest")
-library("tidyverse")
+# ---- start --------------------------------------------------------------
+
+
+library(httr)
+library(rvest)
+library(tidyverse)
 
 folder_create <- function(x, y = "") {
   temp <- paste0(y, x)
@@ -42,13 +45,13 @@ files <- map(urls, function(x){
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
-  files <- temp %>% 
-    read_html() %>% 
-    html_nodes(".download-link") %>% 
+  files <- temp |> 
+    read_html() |> 
+    html_nodes(".download-link") |> 
     html_attr("href")
-  file_type <- temp %>% 
-    read_html() %>% 
-    html_nodes(".file-info") %>%
+  file_type <- temp |> 
+    read_html() |> 
+    html_nodes(".file-info") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
   file_type <- gsub( "\\(", ".", file_type) # make ( a period
@@ -100,13 +103,13 @@ files <- map(urls, function(x){
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
-  files <- temp %>% 
-    read_html() %>% 
-    html_nodes(".download-link") %>% 
+  files <- temp |> 
+    read_html() |> 
+    html_nodes(".download-link") |> 
     html_attr("href")
-  file_type <- temp %>% 
-    read_html() %>% 
-    html_nodes(".file-info") %>%
+  file_type <- temp |> 
+    read_html() |> 
+    html_nodes(".file-info") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
   file_type <- gsub( "\\(", ".", file_type) # make ( a period
@@ -159,13 +162,13 @@ files <- map(urls, function(x){
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
-  files <- temp %>% 
-    read_html() %>% 
-    html_nodes(".download-link") %>% 
+  files <- temp |> 
+    read_html() |> 
+    html_nodes(".download-link") |> 
     html_attr("href")
-  file_type <- temp %>% 
-    read_html() %>% 
-    html_nodes(".file-info") %>%
+  file_type <- temp |> 
+    read_html() |> 
+    html_nodes(".file-info") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
   file_type <- gsub( "\\(", ".", file_type) # make ( a period
@@ -217,13 +220,13 @@ files <- map(urls, function(x){
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
-  files <- temp %>% 
-    read_html() %>% 
-    html_nodes(".download-link") %>% 
+  files <- temp |> 
+    read_html() |> 
+    html_nodes(".download-link") |> 
     html_attr("href")
-  file_type <- temp %>% 
-    read_html() %>% 
-    html_nodes(".file-info") %>%
+  file_type <- temp |> 
+    read_html() |> 
+    html_nodes(".file-info") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
   file_type <- gsub( "\\(", ".", file_type) # make ( a period
@@ -279,13 +282,13 @@ files <- map(urls, function(x){
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
-  files <- temp %>% 
-    read_html() %>% 
-    html_nodes(".download-link") %>% 
+  files <- temp |> 
+    read_html() |> 
+    html_nodes(".download-link") |> 
     html_attr("href")
-  file_type <- temp %>% 
-    read_html() %>% 
-    html_nodes(".file-info") %>%
+  file_type <- temp |> 
+    read_html() |> 
+    html_nodes(".file-info") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
   file_type <- gsub( "\\(", ".", file_type) # make ( a period

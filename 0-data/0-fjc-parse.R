@@ -4,9 +4,9 @@
 
 # ---- start --------------------------------------------------------------
 
-library("haven")
-library("stringr")
-library("tidyverse")
+library(haven)
+library(stringr)
+library(tidyverse)
 sumn <- function(x) sum(x, na.rm = T)
 
 # Create a directory for the data
@@ -17,7 +17,7 @@ if (!file.exists(data_source)) dir.create(data_source)
 
 # ---- parse --------------------------------------------------------------
 
-districts <- read_csv("0-data/fjc/district_cross.csv") %>% 
+districts <- read_csv("0-data/fjc/district_cross.csv") |> 
   rename_all(toupper)
 
 fjc_files <- dir(data_source, full.names = T)
@@ -139,11 +139,11 @@ pre_bapcpa_fdsp <- function(x, y) {
             T ~ "")
 }
 
-bus <- # j5 %>% 
-  # map(function(x) filter(x, NTRDBT == "b")) %>% 
-  # bind_rows() %>% 
-  j5_fread %>% 
-  filter(NTRDBT == "b") %>% 
+bus <- # j5 |> 
+  # map(function(x) filter(x, NTRDBT == "b")) |> 
+  # bind_rows() |> 
+  j5_fread |> 
+  filter(NTRDBT == "b") |> 
   # CASEKEY changed in 2019 to not include the BK component
   mutate(CASEKEY = str_remove(CASEKEY, "BK"),
          org_chap  = if_else(FILEDATE < "2005-10-16",
@@ -159,8 +159,8 @@ bus <- # j5 %>%
          result2 = fdsp(D2FDSP, CLOSEDT))
 
 # Not necessary after they renamed the variables to be all uppercase
-# bus <- bus %>% 
-#   mutate(DISTRICT = if_else(is.na(DISTRICT), District, DISTRICT)) %>% 
+# bus <- bus |> 
+#   mutate(DISTRICT = if_else(is.na(DISTRICT), District, DISTRICT)) |> 
 #   select(-District)
 
 bus <- left_join(bus, districts)
@@ -168,9 +168,9 @@ bus <- left_join(bus, districts)
 write_csv(bus, paste0(local_dir, "/raw_business_new.csv"))
 write_rds(bus, paste0(local_dir, "/raw_business_new.rds"))
 
-banks <- # j5 %>% 
+banks <- # j5 |> 
   # map(function(x) {
-  #   x %>% 
+  #   x |> 
   #     # CASEKEY changed in 2019 to not include the BK component
   #     mutate(CASEKEY = str_remove(CASEKEY, "BK"),
   #            org_chap  = if_else(FILEDATE < "2005-10-16",
@@ -181,11 +181,11 @@ banks <- # j5 %>%
   #                                chp(CRNTCHP)),
   #            cl_chap   = if_else(FILEDATE < "2005-10-16",
   #                                pre_bapcpa_chp(CLCHPT),
-  #                                chp(CLCHPT))) %>% 
+  #                                chp(CLCHPT))) |> 
   #     filter(org_chap == "12" | crnt_chap == "12" | cl_chap == "12")
-  # }) %>% 
-  # bind_rows() %>% 
-  j5_fread %>% 
+  # }) |> 
+  # bind_rows() |> 
+  j5_fread |> 
   mutate(CASEKEY = str_remove(CASEKEY, "BK"),
          org_chap  = if_else(FILEDATE < "2005-10-16",
                              pre_bapcpa_chp(ORGFLCHP),
@@ -195,15 +195,15 @@ banks <- # j5 %>%
                              chp(CRNTCHP)),
          cl_chap   = if_else(FILEDATE < "2005-10-16",
                              pre_bapcpa_chp(CLCHPT),
-                             chp(CLCHPT))) %>% 
-  filter(org_chap == "12" | crnt_chap == "12" | cl_chap == "12") %>% 
-  # mutate(DISTRICT = if_else(is.na(DISTRICT), District, DISTRICT)) %>% 
-  # select(-District) %>% 
+                             chp(CLCHPT))) |> 
+  filter(org_chap == "12" | crnt_chap == "12" | cl_chap == "12") |> 
+  # mutate(DISTRICT = if_else(is.na(DISTRICT), District, DISTRICT)) |> 
+  # select(-District) |> 
   mutate(result  = fdsp(D1FDSP, CLOSEDT),
          result2 = fdsp(D2FDSP, CLOSEDT))
 
-# banks <- banks %>% 
-#   mutate(DISTRICT = if_else(is.na(DISTRICT), District, DISTRICT)) %>% 
+# banks <- banks |> 
+#   mutate(DISTRICT = if_else(is.na(DISTRICT), District, DISTRICT)) |> 
 #   select(-District)
 
 banks <- left_join(banks, districts)

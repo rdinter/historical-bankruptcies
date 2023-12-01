@@ -1,11 +1,14 @@
 # Annual Bankruptcy Filings at County Level: F-5a Tables
 #  ! need to add in quarterly level values based upon subtracting values...
 
-library("lubridate")
-library("readxl")
-library("stringr")
-library("tidyverse")
-library("zoo")
+# ---- start --------------------------------------------------------------
+
+
+library(lubridate)
+library(readxl)
+library(stringr)
+library(tidyverse)
+library(zoo)
 
 # F-5a Tables start the quarter ending on 31 March 2013 then continue
 #  indefinitely. The files start of as .xls files, but it seems like they
@@ -17,6 +20,9 @@ data_source <- paste0(local_dir, "/raw")
 if (!file.exists(local_dir)) dir.create(local_dir, recursive = T)
 if (!file.exists(data_source)) dir.create(data_source)
 
+# ---- read ---------------------------------------------------------------
+
+
 # There's a problem with the .xlsx files. I had to manually save them as
 #  .xls files for them to be readable. Will need to update this later.
 f5a_files <- dir(data_source, full.names = T, pattern = ".xls", recursive = T)
@@ -25,33 +31,33 @@ f5a_files <- f5a_files[!grepl("1998", f5a_files)]
 
 
 # Need to have previously ran the IDB files 0-fjc-data.R and 0-fjc-f5a.R
-f5a_qtrly <- read_csv("0-data/fjc/IDB/f5a_quarterly.csv") %>%
-  # read_rds("0-data/fjc/IDB/f5a_quarterly.rds") %>%
-  # ungroup() %>% 
-  rename_all(function(x) paste0(x, "_qtr")) %>%
+f5a_qtrly <- read_csv("0-data/fjc/IDB/f5a_quarterly.csv") |> 
+  # read_rds("0-data/fjc/IDB/f5a_quarterly.rds") |> 
+  # ungroup() |> 
+  rename_all(function(x) paste0(x, "_qtr")) |> 
   rename(DATE = QTR_ENDED_qtr, FIPS = D1CNTY_qtr,
-         DISTRICT_NS = DISTRICT_NS_qtr) %>%
-  group_by(DISTRICT_NS) %>%
-  complete(FIPS, DATE) %>%
-  mutate_if(is.numeric, ~ifelse(is.na(.), 0, .)) %>% 
-  # replace(is.na(.), 0) #%>%
+         DISTRICT_NS = DISTRICT_NS_qtr) |> 
+  group_by(DISTRICT_NS) |> 
+  complete(FIPS, DATE) |> 
+  mutate_if(is.numeric, ~ifelse(is.na(.), 0, .)) |> 
+  # replace(is.na(.), 0) #|> 
   mutate(DATE = as.Date(DATE),
         FIPS = parse_number(FIPS))
 
-f5a_year <- f5a_qtrly %>%
-  group_by(DISTRICT_NS, FIPS) %>%
+f5a_year <- f5a_qtrly |> 
+  group_by(DISTRICT_NS, FIPS) |> 
   mutate_at(vars(-DATE, -DISTRICT_NS, -FIPS),
             function(x) rollapplyr(x, 4, sum, fill = NA))
 
-f5a_year1 <- read_csv("0-data/uscourts/district_ns.csv") %>%
-  right_join(f5a_year) %>%
+f5a_year1 <- read_csv("0-data/uscourts/district_ns.csv") |> 
+  right_join(f5a_year) |> 
   mutate(DATE = as.Date(DATE, "%Y/%m/%d"),
          QTR_ENDED = format(DATE, "%m/%d/%y"),
          YEAR = year(DATE),
          FISCAL_YEAR = year(floor_date(DATE + 1, unit = "year")),
          ST_ABRV = state.abb[match(STATE,toupper(state.name))],
-         ST_ABRV = ifelse(STATE == "DISTRICT OF COLUMBIA", "DC", ST_ABRV)) %>%
-  arrange(DATE) %>%
+         ST_ABRV = ifelse(STATE == "DISTRICT OF COLUMBIA", "DC", ST_ABRV)) |> 
+  arrange(DATE) |> 
   filter(!is.na(TOTAL_FILINGS_qtr), TOTAL_FILINGS_qtr != 0)
 
 # Remove _qtr from names
@@ -100,8 +106,8 @@ txt_f5a <- map(f5a_txt_files, function(x){
   done   <- grep("GAS", toupper(results$DISTRICT_NS))
   results <- results[seq(1, max(done)),]
   
-  results <- results %>% 
-    filter(!is.na(FIPS)) %>% 
+  results <- results |> 
+    filter(!is.na(FIPS)) |> 
     mutate_at(vars(TOTAL_FILINGS:NBCHAP_13),
               list(~as.integer(gsub(",", "", .))))
   results[is.na(results)] <- 0
@@ -120,10 +126,10 @@ f5a_txt <- bind_rows(txt_f5a)
 
 xls_f5a <- map(f5a_files, function(x){
   temp    <- tryCatch(read_excel(x, col_names = F),
-                      error = function(e) gdata::read.xls(x))
+                      error = function(e) xlsx::read.xls(x, 1))
   
   # Sometimes read_excel doesn't read all the columns, so need to adjust
-  if (ncol(temp) != 16) temp <- gdata::read.xls(x)
+  if (ncol(temp) != 16) temp <- xlsx::read.xls(x, 1)
   
   temp <- temp[, colSums(is.na(temp)) < nrow(temp)]
   
@@ -154,14 +160,14 @@ xls_f5a <- map(f5a_files, function(x){
   done   <- grep("GAS", toupper(results$DISTRICT_NS))
   results <- results[seq(1, max(done)),]
   
-  results <- results %>% 
-    filter(!is.na(FIPS)) %>% 
+  results <- results |> 
+    filter(!is.na(FIPS)) |> 
     mutate_at(vars(TOTAL_FILINGS:NBCHAP_13),
               list(~as.integer(gsub(",", "", .))))
   results[is.na(results)] <- 0
   
-  file_date <- basename(x) %>% 
-    str_sub(5, 14) %>% 
+  file_date <- basename(x) |> 
+    str_sub(5, 14) |> 
     str_replace_all("_", "/")
   results$DATE <- file_date
   
@@ -195,8 +201,8 @@ xls_f5a <- map(f5a_files, function(x){
     results2$DISTRICT_NS <- ifelse(is.na(results2$FIPS), results2$COUNTY, NA)
     results2 <- fill(results2, DISTRICT_NS)
     
-    results2 <- results2 %>% 
-      filter(!is.na(FIPS)) %>% 
+    results2 <- results2 |> 
+      filter(!is.na(FIPS)) |> 
       mutate_at(vars(TOTAL_FILINGS:OTHERS),
                 list(~as.integer(gsub(",", "", .))))
     results2[is.na(results2)] <- 0
@@ -204,18 +210,18 @@ xls_f5a <- map(f5a_files, function(x){
     done   <- grep("GAS", toupper(results2$DISTRICT_NS))
     results2 <- results2[seq(1, max(done)),]
     
-    results <- results2 %>% 
-      select(COUNTY, FIPS, DISTRICT_NS, CHAP_9, CHAP_12, CHAP_15) %>% 
+    results <- results2 |> 
+      select(COUNTY, FIPS, DISTRICT_NS, CHAP_9, CHAP_12, CHAP_15) |> 
       right_join(results)
   }
   
-  results <- results %>% 
+  results <- results |> 
     mutate(FIPS = parse_number(str_remove(FIPS, "\\*")))
   
   return(results)
 })
 
-f5a <- bind_rows(xls_f5a) %>% 
+f5a <- bind_rows(xls_f5a) |> 
   bind_rows(f5a_txt)
 
 # 2018-09-30 combines Arkansas Eastern and Western into one, not sure why
@@ -227,23 +233,23 @@ guam_hack <- data.frame(STATE = "GUAM", DISTRICT = "GUAM",
                         DISTRICT_NS = "GU", CIRCUIT = "NINTH CIRCUIT",
                         CIRCUIT_NUM = "9TH")
 
-f5a <- read_csv("0-data/uscourts/district_ns.csv") %>% 
-  bind_rows(arkansas_hack, guam_hack) %>% 
-  right_join(f5a) %>% 
+f5a <- read_csv("0-data/uscourts/district_ns.csv") |> 
+  bind_rows(arkansas_hack, guam_hack) |> 
+  right_join(f5a) |> 
   mutate(DATE = as.Date(DATE, "%Y/%m/%d"),
          QTR_ENDED = format(DATE, "%m/%d/%y"),
          YEAR = year(DATE),
          FISCAL_YEAR = year(floor_date(DATE + 1, unit = "year")),
          ST_ABRV = state.abb[match(STATE,toupper(state.name))],
-         ST_ABRV = ifelse(STATE == "DISTRICT OF COLUMBIA", "DC", ST_ABRV)) %>% 
+         ST_ABRV = ifelse(STATE == "DISTRICT OF COLUMBIA", "DC", ST_ABRV)) |> 
   arrange(DATE)
 
 miss_date <- unique(f5a$DATE)
 
 # Now bind_rows with the f5a_year
-f5a <- f5a_year1 %>%
-  filter(!(DATE %in% miss_date)) %>%
-  bind_rows(f5a) %>%
+f5a <- f5a_year1 |> 
+  filter(!(DATE %in% miss_date)) |> 
+  bind_rows(f5a) |> 
   arrange(DATE, DISTRICT_NS, FIPS)
 
 write_csv(f5a, paste0(local_dir, "/f5a.csv"))
@@ -256,19 +262,19 @@ write_rds(f5a, paste0(local_dir, "/f5a.rds"))
 # The original f5a data are for the 12-month period, but we want this as a
 #  quarterly measure since those are the intervals of observation.
 
-# f5a_qtr <- f5a %>% 
+# f5a_qtr <- f5a |> 
 #   select(DISTRICT_NS, CIRCUIT_NUM, FIPS, DATE, TOTAL_FILINGS:NBCHAP_13,
-#          CHAP_9:TOTAL_BCHAP_OTHER) %>% 
-#   group_by(DISTRICT_NS, CIRCUIT_NUM) %>% 
-#   complete(FIPS, DATE) %>% 
+#          CHAP_9:TOTAL_BCHAP_OTHER) |> 
+#   group_by(DISTRICT_NS, CIRCUIT_NUM) |> 
+#   complete(FIPS, DATE) |> 
 #   replace(is.na(.), 0)
 # 
-# f5a_both <- f5a_qtr %>% 
-#   full_join(f5a_qtrly) %>% 
+# f5a_both <- f5a_qtr |> 
+#   full_join(f5a_qtrly) |> 
 #   arrange(DATE, DISTRICT_NS, FIPS)
 # 
-# fart <- f5a_both %>% 
-#   group_by(DISTRICT_NS, FIPS) %>% 
+# fart <- f5a_both |> 
+#   group_by(DISTRICT_NS, FIPS) |> 
 #   mutate(fart = TOTAL_FILINGS - lag(TOTAL_FILINGS_qtr) -
 #            lag(TOTAL_FILINGS_qtr, 2) - lag(TOTAL_FILINGS_qtr, 3))
 # 

@@ -1,10 +1,10 @@
 # Monthly Bankruptcy Filings: F-2 Tables
 
-library("lubridate")
-library("readxl")
-library("stringr")
-library("tidyverse")
-library("zoo")
+library(lubridate)
+library(readxl)
+library(stringr)
+library(tidyverse)
+library(zoo)
 
 # F-2 Tables, start quarterly on 31 March 2001 then continue indefinitely. The
 #  files start of as .xls files, although there are two random years which are
@@ -44,7 +44,7 @@ xls_f2 <- map(f2_files, function(x){
         # Sometimes read_excel doesn't read all the columns, so need to adjust
         if (ncol(temp1) != 15) {
           if (tools::file_ext(x) != "xlsx") {
-            temp1 <- gdata::read.xls(x)
+            # temp1 <- gdata::read.xls(x)
             temp1 <- temp1[, 1:15]
           } else {
             temp1 <- temp1[, 1:15]
@@ -104,7 +104,7 @@ xls_f2 <- map(f2_files, function(x){
       # Sometimes read_excel doesn't read all the columns, so need to adjust
       if (ncol(temp1) != 15) {
         if (tools::file_ext(x) != "xlsx") {
-          temp1 <- gdata::read.xls(x)
+          # temp1 <- gdata::read.xls(x)
           temp1 <- temp1[, 1:15]
         } else {
           temp1 <- temp1[, 1:15]
@@ -165,16 +165,16 @@ f2_files <- dir(paste0(data_source, "/pacer"), full.names = T,
 pacer_f2 <- map(f2_files, function(x){
   # Error currently: Error in read_fun(path = path, sheet_i = sheet, limits =
   # limits, shim = shim,  : basic_string::_M_construct null not valid
-  # temp <- read_excel(x, col_names = F)
+  temp <- read_excel(x, col_names = F)
   # Alternative
-  temp <- gdata::read.xls(x)
+  # temp <- gdata::read.xls(x)
   
   temp <- temp[, colSums(is.na(temp)) < nrow(temp)]
   
   # Sometimes read_excel doesn't read all the columns, so need to adjust
   if (ncol(temp) != 15) {
     if (tools::file_ext(x) != "xlsx") {
-      temp <- gdata::read.xls(x)
+      # temp <- gdata::read.xls(x)
       temp <- temp[, 1:15]
     } else {
       temp <- temp[, 1:15]
@@ -234,14 +234,14 @@ guam_hack <- data.frame(STATE = "GUAM", DISTRICT = "GUAM",
                         DISTRICT_NS = "GU", CIRCUIT = "NINTH CIRCUIT",
                         CIRCUIT_NUM = "9TH")
 
-f2_one <- read_csv("0-data/uscourts/district_ns.csv") %>% 
-  bind_rows(arkansas_hack, guam_hack) %>% 
-  right_join(f2_one) %>% 
+f2_one <- read_csv("0-data/uscourts/district_ns.csv") |> 
+  bind_rows(arkansas_hack, guam_hack) |> 
+  right_join(f2_one) |> 
   mutate(QTR_ENDED = quarter(DATE, with_year = T),
          YEAR = year(DATE),
          FISCAL_YEAR = year(floor_date(DATE + 1, unit = "year")),
          ST_ABRV = state.abb[match(STATE,toupper(state.name))],
-         ST_ABRV = ifelse(STATE == "DISTRICT OF COLUMBIA", "DC", ST_ABRV)) %>% 
+         ST_ABRV = ifelse(STATE == "DISTRICT OF COLUMBIA", "DC", ST_ABRV)) |> 
   arrange(DATE)
 
 write_csv(f2_one, paste0(local_dir, "/f2_one.csv"))

@@ -2,11 +2,12 @@
 
 # ---- start --------------------------------------------------------------
 
-library("gdata")
-library("readxl")
-library("stringi")
-library("stringr")
-library("tidyverse")
+# library(gdata)
+library(readxl)
+library(xlsx)
+library(stringi)
+library(stringr)
+library(tidyverse)
 
 # F-2 Tables, start quarterly on 31 March 2001 then continue indefinitely. The
 #  files start of as .xls files, although there are two random years which are
@@ -25,7 +26,7 @@ f2_files <- dir(data_source, full.names = T, pattern = ".xls")
 xls_f2 <- map(f2_files, function(x){
   print(x)
   temp    <- tryCatch(read_excel(x, col_names = F),
-                      error = function(e) gdata::read.xls(x))
+                      error = function(e) xlsx::read.xlsx(x, 1))
   
   # remove columns full of NA
   temp <- temp[, colSums(is.na(temp)) < nrow(temp)]
@@ -33,7 +34,7 @@ xls_f2 <- map(f2_files, function(x){
   # Sometimes read_excel doesn't read all the columns, so need to adjust
   if (ncol(temp) != 15) {
     if (tools::file_ext(x) != "xlsx") {
-      temp <- read.xls(x)
+      # temp <- xlsx::read.xlsx(x, 1)
       temp <- temp[, 1:15]
     } else {
       temp <- temp[, 1:15]
@@ -111,7 +112,7 @@ xls_f2 <- map(f2_files, function(x){
 # devtools::install_github("ropensci/tabulizer")
 # devtools::install_github("ropensci/tabulizerjars", args="--no-multiarch") 
 # devtools::install_github("ropensci/tabulizer", args="--no-multiarch")
-library("tabulizer")
+library(tabulizer)
 # sudo R CMD javareconf <- for eventual ubuntu error
 
 f2_pdf <- dir(data_source, full.names = T, pattern = ".pdf")
@@ -148,15 +149,15 @@ pdf_f2 <- map(f2_pdf, function(x){
 
 # ---- archived -----------------------------------------------------------
 
-f2_three <- bind_rows(xls_f2, pdf_f2) %>% 
+f2_three <- bind_rows(xls_f2, pdf_f2) |> 
   mutate(DATE = as.Date(DATE, "%Y/%m/%d"))
 
 # Next, need to remove the Circuits and Total. Then turn values to numeric.
 #  There's a problem with commas when coerced to numeric, remove commas
 circuits <- c("10TH", "11TH", "1ST", "2ND", "3RD", "4TH",
               "5TH", "6TH", "7TH", "8TH", "9TH", "TOTAL")
-f2_three <- f2_three %>% 
-  filter(!(DISTRICT_NS %in% circuits)) %>% 
+f2_three <- f2_three |> 
+  filter(!(DISTRICT_NS %in% circuits)) |> 
   mutate_at(vars(-DISTRICT_NS, -DATE),
             list(~as.integer(gsub(",", "", .))))
 
@@ -171,19 +172,19 @@ f2_three <- f2_three %>%
 
 archived <- read_csv("0-data/uscourts/archived/f2_three/f2_three_archive.csv")
 
-f2_three <- archived %>% 
-  filter(!is.na(DISTRICT_NS), DATE < "2001-03-31") %>% 
-  select(DATE, DISTRICT_NS, CHAP_12) %>% 
-  bind_rows(f2_three) %>% 
+f2_three <- archived |> 
+  filter(!is.na(DISTRICT_NS), DATE < "2001-03-31") |> 
+  select(DATE, DISTRICT_NS, CHAP_12) |> 
+  bind_rows(f2_three) |> 
   arrange(DATE)
 
 # ADD IN TEMPORARY IMPUTATION METHOD FOR QUARTERLY DATA
-j5 <- read_rds("0-data/uscourts/archived/f2/f2_temp.rds") %>% 
-  filter(!is.na(STATE), DATE < "1995-12-31") %>%
+j5 <- read_rds("0-data/uscourts/archived/f2/f2_temp.rds") |> 
+  filter(!is.na(STATE), DATE < "1995-12-31") |> 
   select(DATE, DISTRICT_NS, impute)
 
-f2_three <- bind_rows(f2_three, j5) %>% 
-  arrange(DATE) %>% 
+f2_three <- bind_rows(f2_three, j5) |> 
+  arrange(DATE) |> 
   mutate(impute = ifelse(is.na(impute), CHAP_12, impute))
 
 # ---- clean-up -----------------------------------------------------------
@@ -199,9 +200,9 @@ guam_hack <- data.frame(STATE = "GUAM", DISTRICT = "GUAM",
                         DISTRICT_NS = "GU", CIRCUIT = "NINTH CIRCUIT",
                         CIRCUIT_NUM = "9TH")
 
-f2_three_final <- read_csv("0-data/uscourts/district_ns.csv") %>% 
-  bind_rows(arkansas_hack, guam_hack) %>% 
-  right_join(f2_three) %>% 
+f2_three_final <- read_csv("0-data/uscourts/district_ns.csv") |> 
+  bind_rows(arkansas_hack, guam_hack) |> 
+  right_join(f2_three) |> 
   mutate(YEAR = year(DATE),
          QTR_ENDED = format(DATE, "%m/%d/%y"),
          FISCAL_YEAR = year(floor_date(DATE + 1, unit = "year")),
@@ -212,7 +213,7 @@ f2_three_final <- read_csv("0-data/uscourts/district_ns.csv") %>%
                              STATE == "NORTHERN MARIANA ISLANDS" ~ "NMI",
                              STATE == "GUAM" ~ "GU",
                              TRUE ~ ST_ABRV)) %>% 
-  select(STATE:DATE, TOTAL_FILINGS, CHAP_7, CHAP_11, CHAP_12, everything()) %>% 
+  select(STATE:DATE, TOTAL_FILINGS, CHAP_7, CHAP_11, CHAP_12, everything()) |> 
   arrange(DATE, CIRCUIT, STATE, DISTRICT_NS)
 
 write_csv(f2_three_final, paste0(local_dir, "/f2_three.csv"))
