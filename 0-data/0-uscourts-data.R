@@ -3,7 +3,6 @@
 
 # ---- start --------------------------------------------------------------
 
-
 library(httr)
 library(rvest)
 library(tidyverse)
@@ -26,7 +25,9 @@ folder_create <- function(x, y = "") {
 local_dir    <- folder_create("0-data/uscourts/f2")
 data_source  <- folder_create("/raw", local_dir)
 
-base_url <- "http://www.uscourts.gov/statistics/table/f-2/bankruptcy-filings/"
+# adjusted to:
+# https://www.uscourts.gov/data-news/data-tables/2024/12/31/bankruptcy-filings/f-2
+# base_url <- "http://www.uscourts.gov/statistics/table/f-2/bankruptcy-filings/"
 
 # Starts in 2001, goes up until current year
 years <- as.character(2001:format(Sys.Date(), "%Y"))
@@ -35,31 +36,32 @@ qtr   <- c("/03/31", "/06/30", "/09/30", "/12/31")
 urls  <- expand.grid(years, qtr)
 urls  <- paste0(urls$Var1, urls$Var2)
 
-
-files <- map(urls, function(x){
-  # Pause a second or three before downloading
-  Sys.sleep(runif(1, 1, 3))
-  x_urls <- paste0(base_url, x)
-  temp   <- GET(x_urls)
+files <- map(urls, function(x) {
+  glued <- str_glue("https://www.uscourts.gov/data-news/data-tables/{x}/",
+                    "bankruptcy-filings/f-2")
+  temp   <- GET(glued)
   
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
   files <- temp |> 
     read_html() |> 
-    html_nodes(".download-link") |> 
+    html_nodes(".button--download") |> 
     html_attr("href")
   file_type <- temp |> 
     read_html() |> 
-    html_nodes(".file-info") |> 
+    html_nodes(".download-button__meta") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
-  file_type <- gsub( "\\(", ".", file_type) # make ( a period
+  file_type <- paste0(".", file_type) # add a period
   
   file_name <- paste0(data_source, "/f2_", gsub("/", "_", x), file_type)
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
+      # Pause a second or three before downloading
+      Sys.sleep(runif(1, 1, 3))
+      
       download.file(paste0("http://www.uscourts.gov", files), file_name,
                     mode = "wb")
     }
@@ -87,38 +89,47 @@ file_xls <- files[grepl(".xls", files$file_name), ]
 local_dir    <- folder_create("0-data/uscourts/f2_judicial")
 data_source  <- folder_create("/raw", local_dir)
 
-base_url <- "http://www.uscourts.gov/statistics/table/f-2/judicial-business/"
+# adjusted to:
+# https://www.uscourts.gov/data-news/data-tables/2024/09/30/judicial-business/f-2
+# base_url <- "http://www.uscourts.gov/statistics/table/f-2/judicial-business/"
+
+# Something kind of new?
+# https://www.uscourts.gov/data-news/data-tables/2024/12/31/statistical-tables-federal-judiciary/f-2
+
 
 # Starts in 1997 goes to 2000 .... then the next grouping.
 urls <- paste0(1997:format(Sys.Date(), "%Y"), "/09/30")
 
 # http://www.uscourts.gov/statistics/table/f-2/judicial-business/1997/09/30
 
-files <- map(urls, function(x){
-  # Pause a second or three before downloading
-  Sys.sleep(runif(1, 1, 3))
-  x_urls <- paste0(base_url, x)
-  temp   <- GET(x_urls)
+files <- map(urls, function(x) {
+  glued <- str_glue("https://www.uscourts.gov/data-news/data-tables/{x}/",
+                    "judicial-business/f-2")
+  temp   <- GET(glued)
+  
   
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
   files <- temp |> 
     read_html() |> 
-    html_nodes(".download-link") |> 
+    html_nodes(".button--download") |> 
     html_attr("href")
   file_type <- temp |> 
     read_html() |> 
-    html_nodes(".file-info") |> 
+    html_nodes(".download-button__meta") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
-  file_type <- gsub( "\\(", ".", file_type) # make ( a period
+  file_type <- paste0(".", file_type) # add a period
   
   file_name <- paste0(data_source, "/f2_judicial_", gsub("/", "_", x),
                       file_type)
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
+      # Pause a second or three before downloading
+      Sys.sleep(runif(1, 1, 3))
+      
       download.file(paste0("http://www.uscourts.gov", files), file_name,
                     mode = "wb")
     }
@@ -143,8 +154,10 @@ file_xls <- files[grepl(".xls", files$file_name), ]
 local_dir    <- folder_create("0-data/uscourts/f2_one")
 data_source  <- folder_create("/raw", local_dir)
 
-base_url <- paste0("http://www.uscourts.gov/statistics/table/",
-                   "f-2-one-month/bankruptcy-filings/")
+# adjusted to:
+# https://www.uscourts.gov/data-news/data-tables/2024/12/31/bankruptcy-filings/f-2-one-month
+# base_url <- paste0("http://www.uscourts.gov/statistics/table/",
+#                    "f-2-one-month/bankruptcy-filings/")
 
 # Starts in 2013, goes up until current year as of right now.
 years <- as.character(2013:format(Sys.Date(), "%Y"))
@@ -153,30 +166,33 @@ qtr   <- c("/03/31", "/06/30", "/09/30", "/12/31")
 urls  <- expand.grid(years, qtr)
 urls  <- paste0(urls$Var1, urls$Var2)
 
-files <- map(urls, function(x){
-  # Pause a second or three before downloading
-  Sys.sleep(runif(1, 1, 3))
-  x_urls <- paste0(base_url, x)
-  temp   <- GET(x_urls)
+files <- map(urls, function(x) {
+  glued <- str_glue("https://www.uscourts.gov/data-news/data-tables/{x}/",
+                    "bankruptcy-filings/f-2-one-month")
+  temp   <- GET(glued)
+  
   
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
   files <- temp |> 
     read_html() |> 
-    html_nodes(".download-link") |> 
+    html_nodes(".button--download") |> 
     html_attr("href")
   file_type <- temp |> 
     read_html() |> 
-    html_nodes(".file-info") |> 
+    html_nodes(".download-button__meta") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
-  file_type <- gsub( "\\(", ".", file_type) # make ( a period
+  file_type <- paste0(".", file_type) # add a period
   
   file_name <- paste0(data_source, "/f2_one_", gsub("/", "_", x), file_type)
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
+      # Pause a second or three before downloading
+      Sys.sleep(runif(1, 1, 3))
+      
       download.file(paste0("http://www.uscourts.gov", files), file_name,
                     mode = "wb")
     }
@@ -198,8 +214,10 @@ file_xls <- files[grepl(".xls", files$file_name), ]
 local_dir    <- folder_create("0-data/uscourts/f2_three")
 data_source  <- folder_create("/raw", local_dir)
 
-base_url <- paste0("http://www.uscourts.gov/statistics/table/",
-                   "f-2-three-months/bankruptcy-filings/")
+# adjusted to:
+# https://www.uscourts.gov/data-news/data-tables/2024/12/31/bankruptcy-filings/f-2-three-months
+# base_url <- paste0("http://www.uscourts.gov/statistics/table/",
+#                    "f-2-three-months/bankruptcy-filings/")
 
 # Starts in 2001, goes up until current year
 years <- as.character(2001:format(Sys.Date(), "%Y"))
@@ -211,30 +229,33 @@ urls  <- paste0(urls$Var1, urls$Var2)
 # http://www.uscourts.gov/statistics/table/f-2-three-months/
 #  bankruptcy-filings/2016/09/30
 
-files <- map(urls, function(x){
-  # Pause a second or three before downloading
-  Sys.sleep(runif(1, 1, 3))
-  x_urls <- paste0(base_url, x)
-  temp   <- GET(x_urls)
+files <- map(urls, function(x) {
+  glued <- str_glue("https://www.uscourts.gov/data-news/data-tables/{x}/",
+                    "bankruptcy-filings/f-2-three-months")
+  temp   <- GET(glued)
+  
   
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
   files <- temp |> 
     read_html() |> 
-    html_nodes(".download-link") |> 
+    html_nodes(".button--download") |> 
     html_attr("href")
   file_type <- temp |> 
     read_html() |> 
-    html_nodes(".file-info") |> 
+    html_nodes(".download-button__meta") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
-  file_type <- gsub( "\\(", ".", file_type) # make ( a period
+  file_type <- paste0(".", file_type) # add a period
   
   file_name <- paste0(data_source, "/f2_three_", gsub("/", "_", x), file_type)
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
+      # Pause a second or three before downloading
+      Sys.sleep(runif(1, 1, 3))
+      
       download.file(paste0("http://www.uscourts.gov", files), file_name,
                     mode = "wb")
     }
@@ -260,8 +281,10 @@ file_xls <- files[grepl(".xls", files$file_name), ]
 local_dir    <- folder_create("0-data/uscourts/f5a")
 data_source  <- folder_create("/raw", local_dir)
 
-base_url <- paste0("http://www.uscourts.gov/statistics/table/",
-                   "f-5a/bankruptcy-filings/")
+# adjusted to:
+# https://www.uscourts.gov/data-news/data-tables/2024/12/31/bankruptcy-filings/f-5a
+# base_url <- paste0("http://www.uscourts.gov/statistics/table/",
+#                    "f-5a/bankruptcy-filings/")
 
 # Starts in 2013, goes up until current year
 years <- as.character(2013:format(Sys.Date(), "%Y"))
@@ -273,30 +296,32 @@ urls  <- paste0(urls$Var1, urls$Var2)
 # http://www.uscourts.gov/statistics/table/f-2-three-months/
 #  bankruptcy-filings/2016/09/30
 
-files <- map(urls, function(x){
-  # Pause a second or three before downloading
-  Sys.sleep(runif(1, 1, 3))
-  x_urls <- paste0(base_url, x)
-  temp   <- GET(x_urls)
+files <- map(urls, function(x) {
+  glued <- str_glue("https://www.uscourts.gov/data-news/data-tables/{x}/",
+                    "bankruptcy-filings/f-5a")
+  temp   <- GET(glued)
   
   # In case the file doesn't exist:
   if (temp$status_code > 400) return()
   
   files <- temp |> 
     read_html() |> 
-    html_nodes(".download-link") |> 
+    html_nodes(".button--download") |> 
     html_attr("href")
   file_type <- temp |> 
     read_html() |> 
-    html_nodes(".file-info") |> 
+    html_nodes(".download-button__meta") |> 
     html_text()
   file_type <- gsub( ",.*$", "", file_type) # take characters before ,
-  file_type <- gsub( "\\(", ".", file_type) # make ( a period
+  file_type <- paste0(".", file_type) # add a period
   
   file_name <- paste0(data_source, "/f5a_", gsub("/", "_", x), file_type)
   
   map2(files, file_name, function(files, file_name){
     if (!file.exists(file_name)) {
+      # Pause a second or three before downloading
+      Sys.sleep(runif(1, 1, 3))
+      
       download.file(paste0("http://www.uscourts.gov", files), file_name,
                     mode = "wb")
     }
