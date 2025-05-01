@@ -77,7 +77,7 @@ txt_pos <- fwf_widths(c(18, 5, 9, 10, 8, 4, 8, 9, 8, 7, 6, 7, 10, 10, 4, 8),
 f5a_txt_files <- dir(data_source, pattern = ".txt",
                      full.names = T, recursive = T)
 
-txt_f5a <- map(f5a_txt_files, function(x){
+txt_f5a <- map(f5a_txt_files, function(x) {
   temp    <- read_fwf(x, col_positions = txt_pos,
                       col_types = cols(.default = "c"))
   
@@ -124,7 +124,7 @@ f5a_txt <- bind_rows(txt_f5a)
 
 # ---- excel-files --------------------------------------------------------
 
-xls_f5a <- map(f5a_files, function(x){
+xls_f5a <- map(f5a_files, function(x) {
   temp    <- tryCatch(read_excel(x, col_names = F),
                       error = function(e) xlsx::read.xls(x, 1))
   
