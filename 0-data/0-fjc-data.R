@@ -42,6 +42,9 @@ set_config(config(ssl_verifypeer = 0L))
 # sudo apt-get update && apt-get install ca-certificates
 # sudo update-ca-certificates
 
+# these are large files, may need to set a higher timeout limit
+options(timeout=10*60)
+
 download_links <- map2(link_files, links,  function(x, y) {
   
   if (!file.exists(x)) {
