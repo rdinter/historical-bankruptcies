@@ -2,6 +2,11 @@
 
 # ---- start --------------------------------------------------------------
 
+# Need to read in the two missing xls files (2004-12-31 and 2005-03-31),
+#  which are only PDFs
+# devtools::install_github("ropensci/tabulapdf")
+library(tabulapdf)
+
 # library(gdata)
 library(readxl)
 library(xlsx)
@@ -109,24 +114,30 @@ xls_f2 <- map(f2_files, function(x){
 
 # Need to read in the two missing xls files (2004-12-31 and 2005-03-31),
 #  which are only PDFs
-# devtools::install_github("ropensci/tabulizer")
-# devtools::install_github("ropensci/tabulizerjars", args="--no-multiarch") 
-# devtools::install_github("ropensci/tabulizer", args="--no-multiarch")
-library(tabulizer)
-# sudo R CMD javareconf <- for eventual ubuntu error
 
 f2_pdf <- dir(data_source, full.names = T, pattern = ".pdf")
 f2_pdf <- f2_pdf[grepl("2004_12_31|2005_03_31", f2_pdf)]
 
 # Read in those dang pdf files
-pdf_f2 <- map(f2_pdf, function(x){
-  temp <- extract_tables(x)
+pdf_f2 <- map(f2_pdf, function(x) {
+  temp <- extract_tables(x, col_names = FALSE)
   
-  temp_df <- map(temp, function(y){
-    j5 <- apply(y, 1, function(z) c(z[!(z == "")], z[(z == "")]))
+  temp_df <- map(temp, function(y) {
+    # if there are more than 15 columns, then we need to squish.
+    df <- select(y, where(~!is.logical(.)))
     
-    j5 <- as.data.frame(t(j5))
-    j5 <- j5[, 1:15]
+    if (ncol(df) > 15) {
+      j5 <- df |> 
+        mutate(X14 = coalesce(as.character(X14), as.character(X15))) |> 
+        select(-X15)
+    } else {
+      j5 <- df
+    }
+    
+    result <- as.matrix(j5[,colSums(is.na(j5)) < nrow(j5)])
+    colnames(result) <- NULL
+    
+    return(as.data.frame(result))
   })
   
   temp <- bind_rows(temp_df)
@@ -164,7 +175,7 @@ f2_three <- f2_three |>
 f2_three[is.na(f2_three)] <- 0
 
 # Set the "other" bankruptcies to NA prior to 2018-09-30
-f2_three <- f2_three %>% 
+f2_three <- f2_three |> 
   mutate(TOTAL_OTHER = if_else(DATE < "2018-09-30",
                                NA_real_, TOTAL_OTHER),
          TOTAL_BCHAP_OTHER = if_else(DATE < "2018-09-30",
