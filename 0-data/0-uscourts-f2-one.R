@@ -244,5 +244,10 @@ f2_one <- read_csv("0-data/uscourts/district_ns.csv") |>
          ST_ABRV = ifelse(STATE == "DISTRICT OF COLUMBIA", "DC", ST_ABRV)) |> 
   arrange(DATE)
 
+# # A mild QA check
+# f2_one |> 
+#   group_by(DATE) |> 
+#   tally() |> View()
+
 write_csv(f2_one, paste0(local_dir, "/f2_one.csv"))
 write_rds(f2_one, paste0(local_dir, "/f2_one.rds"))

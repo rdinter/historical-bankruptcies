@@ -252,6 +252,11 @@ f5a <- f5a_year1 |>
   bind_rows(f5a) |> 
   arrange(DATE, DISTRICT_NS, FIPS)
 
+# # A mild QA check
+# f5a |>
+#   group_by(DATE) |>
+#   tally() |> View()
+
 write_csv(f5a, paste0(local_dir, "/f5a.csv"))
 write_rds(f5a, paste0(local_dir, "/f5a.rds"))
 

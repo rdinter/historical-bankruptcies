@@ -1,6 +1,5 @@
 # Downloading files from uscourts.gov on bankruptcy
-# https://www.fjc.gov/research/idb
-#  bankruptcy-cases-filed-terminated-and-pending-fy-2008-present
+# https://www.fjc.gov/research/idb/bankruptcy-cases-filed-terminated-and-pending-fy-2008-present
 
 # ---- start --------------------------------------------------------------
 
@@ -72,15 +71,15 @@ download_links <- map2(link_files, links,  function(x, y) {
 # })
 # 
 # File for the 2008 onward:
-link08_on <- paste0("https://www.fjc.gov/sites/default/files/idb/textfiles/",
-                    "cpbank08on_0.zip")
-file08_on <- paste0(data_source, "/", basename(link08_on))
-
-if (!file.exists(file08_on)) {
-  library(RCurl)
-  #
-  f = CFILE(file08_on, mode="wb")
-  curlPerform(url = link08_on, writedata = f@ref)
-  close(f)
-  
-}
+# link08_on <- paste0("https://www.fjc.gov/sites/default/files/idb/textfiles/",
+#                     "cpbank08on_0.zip")
+# file08_on <- paste0(data_source, "/", basename(link08_on))
+# 
+# if (!file.exists(file08_on)) {
+#   library(RCurl)
+#   #
+#   f = CFILE(file08_on, mode="wb")
+#   curlPerform(url = link08_on, writedata = f@ref)
+#   close(f)
+#   
+# }

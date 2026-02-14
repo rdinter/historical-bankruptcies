@@ -227,5 +227,10 @@ f2_three_final <- read_csv("0-data/uscourts/district_ns.csv") |>
   select(STATE:DATE, TOTAL_FILINGS, CHAP_7, CHAP_11, CHAP_12, everything()) |> 
   arrange(DATE, CIRCUIT, STATE, DISTRICT_NS)
 
+# # A mild QA check
+# f2_three_final |>
+#   group_by(DATE) |>
+#   tally() |> View()
+
 write_csv(f2_three_final, paste0(local_dir, "/f2_three.csv"))
 write_rds(f2_three_final, paste0(local_dir, "/f2_three.rds"))
